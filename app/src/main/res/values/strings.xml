@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Book and Audio</string>
+    <string name="placeholder">This is: %1$s</string>
+</resources>
