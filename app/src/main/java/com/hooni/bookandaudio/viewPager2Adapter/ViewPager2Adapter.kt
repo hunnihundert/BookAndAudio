@@ -12,10 +12,10 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
     private var listOfImages = emptyList<String>()
 
     inner class CustomViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val mainText = view.main_text
+        private val mainText = view.main_image
 
         fun bind(item: String) {
-            mainText.text = itemView.context.getString(R.string.placeholder,item)
+            //mainText.text = itemView.context.getString(R.string.placeholder,item)
         }
     }
 
