@@ -1,5 +1,9 @@
 package com.hooni.bookandaudio.viewPager2Adapter
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +13,14 @@ import kotlinx.android.synthetic.main.viewpager_list_item.view.*
 
 
 class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder>() {
-    private var listOfImages = emptyList<String>()
+    private var listOfImages = emptyList<Uri>()
 
     inner class CustomViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val mainText = view.main_image
+        private val image = view.main_image
 
-        fun bind(item: String) {
-            //mainText.text = itemView.context.getString(R.string.placeholder,item)
+        fun bind(item: Uri) {
+            val bitmapToSet = setImageToImageView(image.context,item)
+            image.setImageBitmap(bitmapToSet)
         }
     }
 
@@ -32,7 +37,12 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
         holder.bind(listOfImages[position])
     }
 
-    internal fun setStringList(listOfStrings: List<String>) {
-        listOfImages = listOfStrings
+    internal fun setImageUriList(listOfUris: List<Uri>) {
+        listOfImages = listOfUris
+    }
+
+    private fun setImageToImageView(context: Context, pathFileName: Uri): Bitmap {
+        val mySource = ImageDecoder.createSource(context.contentResolver,pathFileName)
+        return ImageDecoder.decodeBitmap(mySource)
     }
 }

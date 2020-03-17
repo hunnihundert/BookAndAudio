@@ -1,42 +1,41 @@
 package com.hooni.bookandaudio.fragments
 
+import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
+import android.content.pm.PackageManager
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
-import android.provider.DocumentsProvider
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.viewPager2Adapter.ViewPager2Adapter
-import kotlinx.android.synthetic.main.fragment_main.view.*
 import java.io.File
 
 class MainFragment: Fragment() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var viewPagerAdapter: ViewPager2Adapter
-    private lateinit var listOfDirectories: List<DocumentFile>
     private lateinit var testImageView: ImageView
-    private lateinit var testButton: Button
+    private lateinit var pickFile: Button
+    private lateinit var pickFolder: Button
+    private lateinit var uris: List<Uri>
 
     companion object {
+        private val PICK_FILE = 0
         private val PICK_MAIN_FOLDER = 1
-        private val SUB_DIRECTORY_TEST = "영어/음원 O/A House Is A house for Me/"
+        private val ROOT_DIRECTORY = "/storage/emulated/0/"
+        private val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 0
     }
 
 
@@ -45,64 +44,90 @@ class MainFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_image_test, container, false)
-        testImageView = view.findViewById(R.id.imageView)
-        testButton = view.findViewById(R.id.imageTestButton)
-//        initRecyclerView(view)
-//        view.open_file_choser.setOnClickListener {
-//           pickMainFolder()
-//        }
-        testButton.setOnClickListener {
-            pickMainFolder()
+        val view = inflater.inflate(R.layout.fragment_image_viewer, container, false)
 
+        // TODO: Change to ViewBinding
+//        testImageView = view.findViewById(R.id.imageView)
+        pickFile = view.findViewById(R.id.filePicker)
+        pickFolder = view.findViewById(R.id.folderPicker)
+        initRecyclerView(view)
+        pickFile.setOnClickListener {
+            pickFile()
         }
-
+        pickFolder.setOnClickListener {
+            pickFolder()
+        }
         return view
     }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         lateinit var thisOne: DocumentFile
-        if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            data?.data?.also {
-                Log.d("Uri",it.toString())
-                //thisOne = DocumentFile.fromTreeUri(requireContext(),it) ?: return
-                createListOfImages(it)
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                PICK_FILE -> {
+                    // file picker
+                    data?.data?.also {
+                        Log.d("Uri",it.toString())
+                        uris = listOf(it,it,it)
+                    }
+                }
+                PICK_MAIN_FOLDER -> {
+                    // folder picker
+                    data?.data?.also { it ->
+                        Log.d("Uri",it.toString())
+                        listDirectories(it)
+                        //uris = setUris(it)
+                    }
+                }
             }
+            viewPagerAdapter.setImageUriList(uris)
+            viewPagerAdapter.notifyDataSetChanged()
         }
-        //listOfDirectories = thisOne.listFiles().filter { it.isDirectory }
-
-
     }
 
     private fun initRecyclerView(view: View) {
-        val strings = listOf("1","2","3")
         viewPager = view.findViewById(R.id.main_image)
         viewPagerAdapter = ViewPager2Adapter()
-        viewPagerAdapter.setStringList(strings)
+        uris = listOf()
+        viewPagerAdapter.setImageUriList(uris)
         viewPager.adapter = viewPagerAdapter
     }
 
-    private fun pickMainFolder() {
-        val myUri = DocumentFile.fromSingleUri(requireContext(),Uri.parse("content://com.android.externalstorage.documents/tree/primary%3A"))
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+    private fun pickFile() {
+        val myUri = DocumentFile.fromSingleUri(requireContext(),Uri.parse(ROOT_DIRECTORY))
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            //type = "image/jpeg"
             type = "*/*"
             putExtra(DocumentsContract.EXTRA_INITIAL_URI, myUri!!.uri)
             //flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
+        startActivityForResult(Intent.createChooser(intent,"Select something"),PICK_FILE)
+    }
+
+    private fun pickFolder() {
+        val myUri = DocumentFile.fromSingleUri(requireContext(),Uri.parse(ROOT_DIRECTORY))
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, myUri!!.uri)
+        }
         startActivityForResult(Intent.createChooser(intent,"Select something"),PICK_MAIN_FOLDER)
     }
 
-    private fun listDirectories() {
-        val directory = requireContext().getExternalFilesDir(null)
-        val files = directory!!.listFiles()
+
+    private fun listDirectories(uri: Uri) {
+        val selectedFolder = File("$ROOT_DIRECTORY${uri.path!!.substringAfter("primary:")}")
+        if(requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),PERMISSION_REQUEST_READ_EXTERNAL_STORAGE)
+        }
+        // files is an array containing all files of the directory of rootPath
+        val files = selectedFolder.listFiles()
         Log.d("files",files?.size.toString())
         for(file in files) {
             Log.d("files","Filename: ${file.name}")
         }
     }
 
-    private fun createListOfImages(pathFileName: Uri) {
+    private fun setImageToImageView(pathFileName: Uri) {
         val mySource = ImageDecoder.createSource(requireContext().contentResolver,pathFileName)
         val myBitmap = ImageDecoder.decodeBitmap(mySource)
         testImageView.setImageBitmap(myBitmap)
