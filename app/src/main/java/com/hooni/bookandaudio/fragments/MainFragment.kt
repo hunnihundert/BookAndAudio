@@ -24,13 +24,11 @@ class MainFragment : Fragment() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var viewPagerAdapter: ViewPager2Adapter
-    private lateinit var pickFile: Button
     private lateinit var pickFolder: Button
     private lateinit var uris: List<Uri>
     private var selectedFolder = Uri.EMPTY
 
     companion object {
-        private const val PICK_FILE = 0
         private const val PICK_MAIN_FOLDER = 1
         private const val ROOT_DIRECTORY = "/storage/emulated/0/"
         private const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 0
@@ -45,13 +43,8 @@ class MainFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_image_viewer, container, false)
 
         // TODO: Change to ViewBinding
-//        testImageView = view.findViewById(R.id.imageView)
-        pickFile = view.findViewById(R.id.filePicker)
         pickFolder = view.findViewById(R.id.folderPicker)
         initRecyclerView(view)
-        pickFile.setOnClickListener {
-            pickFile()
-        }
         pickFolder.setOnClickListener {
             pickFolder()
         }
@@ -62,13 +55,6 @@ class MainFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                PICK_FILE -> {
-                    // file picker
-                    data?.data?.also {
-                        uris = listOf(it, it, it)
-                        viewPagerAdapter.setImageList(uris)
-                    }
-                }
                 PICK_MAIN_FOLDER -> {
                     // folder picker
                     data?.data?.also { it ->
@@ -87,17 +73,6 @@ class MainFragment : Fragment() {
         uris = listOf()
         viewPagerAdapter.setImageList(uris)
         viewPager.adapter = viewPagerAdapter
-    }
-
-    private fun pickFile() {
-        val myUri = DocumentFile.fromSingleUri(requireContext(), Uri.parse(ROOT_DIRECTORY))
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            //type = "image/jpeg"
-            type = "*/*"
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, myUri!!.uri)
-            //flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }
-        startActivityForResult(Intent.createChooser(intent, "Select something"), PICK_FILE)
     }
 
     private fun pickFolder() {
@@ -128,7 +103,8 @@ class MainFragment : Fragment() {
                 ).show()
                 return resultList
             }
-            if (files.any { !it.isJpeg() }) {
+            // TODO: reconsider, if there is a non-jpg file in the folder to still show images
+            if (files.all { it.isJpeg() }) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.selected_folder_does_not_contain_images),
