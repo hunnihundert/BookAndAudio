@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.DocumentsContract
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
@@ -22,7 +22,7 @@ import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.viewPager2Adapter.ViewPager2Adapter
 import java.io.File
 
-class MainFragment: Fragment() {
+class MainFragment : Fragment() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var viewPagerAdapter: ViewPager2Adapter
@@ -30,6 +30,7 @@ class MainFragment: Fragment() {
     private lateinit var pickFile: Button
     private lateinit var pickFolder: Button
     private lateinit var uris: List<Uri>
+    private var selectedFolder = Uri.EMPTY
 
     companion object {
         private val PICK_FILE = 0
@@ -62,22 +63,21 @@ class MainFragment: Fragment() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        lateinit var thisOne: DocumentFile
-        if(resultCode == Activity.RESULT_OK) {
-            when(requestCode) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
                 PICK_FILE -> {
                     // file picker
                     data?.data?.also {
-                        Log.d("Uri",it.toString())
-                        uris = listOf(it,it,it)
+                        Log.d("Uri", it.toString())
+                        uris = listOf(it, it, it)
                     }
                 }
                 PICK_MAIN_FOLDER -> {
                     // folder picker
                     data?.data?.also { it ->
-                        Log.d("Uri",it.toString())
-                        listDirectories(it)
-                        //uris = setUris(it)
+                        Log.d("Uri", it.toString())
+                        selectedFolder = it
+                        listDirectories(selectedFolder)
                     }
                 }
             }
@@ -95,40 +95,65 @@ class MainFragment: Fragment() {
     }
 
     private fun pickFile() {
-        val myUri = DocumentFile.fromSingleUri(requireContext(),Uri.parse(ROOT_DIRECTORY))
+        val myUri = DocumentFile.fromSingleUri(requireContext(), Uri.parse(ROOT_DIRECTORY))
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             //type = "image/jpeg"
             type = "*/*"
             putExtra(DocumentsContract.EXTRA_INITIAL_URI, myUri!!.uri)
             //flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
-        startActivityForResult(Intent.createChooser(intent,"Select something"),PICK_FILE)
+        startActivityForResult(Intent.createChooser(intent, "Select something"), PICK_FILE)
     }
 
     private fun pickFolder() {
-        val myUri = DocumentFile.fromSingleUri(requireContext(),Uri.parse(ROOT_DIRECTORY))
+        val myUri = DocumentFile.fromSingleUri(requireContext(), Uri.parse(ROOT_DIRECTORY))
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
             putExtra(DocumentsContract.EXTRA_INITIAL_URI, myUri!!.uri)
         }
-        startActivityForResult(Intent.createChooser(intent,"Select something"),PICK_MAIN_FOLDER)
+        startActivityForResult(Intent.createChooser(intent, "Select something"), PICK_MAIN_FOLDER)
     }
 
 
     private fun listDirectories(uri: Uri) {
-        val selectedFolder = File("$ROOT_DIRECTORY${uri.path!!.substringAfter("primary:")}")
-        if(requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),PERMISSION_REQUEST_READ_EXTERNAL_STORAGE)
+
+        if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
+            )
+        } else {
+            val selectedFolder = File("$ROOT_DIRECTORY${uri.path!!.substringAfter("primary:")}")
+
+            // files is an array containing all files of the directory of rootPath
+            val files = selectedFolder.listFiles()
+
+            files?.let {
+                Log.d("files", it.size.toString())
+                for (file in it) {
+                    Log.d("files", "Filename: ${file.name}")
+                }
+            }
         }
-        // files is an array containing all files of the directory of rootPath
-        val files = selectedFolder.listFiles()
-        Log.d("files",files?.size.toString())
-        for(file in files) {
-            Log.d("files","Filename: ${file.name}")
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_READ_EXTERNAL_STORAGE && permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            listDirectories(selectedFolder)
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Reading External Storage Permission not granted. Aborting.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     private fun setImageToImageView(pathFileName: Uri) {
-        val mySource = ImageDecoder.createSource(requireContext().contentResolver,pathFileName)
+        val mySource = ImageDecoder.createSource(requireContext().contentResolver, pathFileName)
         val myBitmap = ImageDecoder.decodeBitmap(mySource)
         testImageView.setImageBitmap(myBitmap)
     }
