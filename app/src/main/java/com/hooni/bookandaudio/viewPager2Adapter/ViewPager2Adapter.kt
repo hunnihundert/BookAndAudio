@@ -10,16 +10,21 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
 import kotlinx.android.synthetic.main.viewpager_list_item.view.*
+import java.io.File
 
 
 class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder>() {
-    private var listOfImages = emptyList<Uri>()
+    private var listOfImages = emptyList<Any>()
 
     inner class CustomViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val image = view.main_image
 
-        fun bind(item: Uri) {
-            val bitmapToSet = setImageToImageView(image.context,item)
+        fun bind(item: Any) {
+            lateinit var bitmapToSet: Bitmap
+            when (item) {
+                is Uri -> bitmapToSet = setUriToImageView(image.context, item)
+                is File -> bitmapToSet = setUriToImageView(item)
+            }
             image.setImageBitmap(bitmapToSet)
         }
     }
@@ -37,12 +42,17 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
         holder.bind(listOfImages[position])
     }
 
-    internal fun setImageUriList(listOfUris: List<Uri>) {
+    internal fun setImageList(listOfUris: List<Any>) {
         listOfImages = listOfUris
     }
 
-    private fun setImageToImageView(context: Context, pathFileName: Uri): Bitmap {
+    private fun setUriToImageView(context: Context, pathFileName: Uri): Bitmap {
         val mySource = ImageDecoder.createSource(context.contentResolver,pathFileName)
+        return ImageDecoder.decodeBitmap(mySource)
+    }
+
+    private fun setUriToImageView(file: File): Bitmap {
+        val mySource = ImageDecoder.createSource(file)
         return ImageDecoder.decodeBitmap(mySource)
     }
 }

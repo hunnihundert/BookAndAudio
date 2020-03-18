@@ -13,6 +13,8 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/folderPicker"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteX="707dp" />
     <Button
         android:id="@+id/filePicker"
