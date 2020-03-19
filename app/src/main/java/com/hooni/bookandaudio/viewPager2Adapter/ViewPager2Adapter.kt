@@ -1,9 +1,8 @@
 package com.hooni.bookandaudio.viewPager2Adapter
 
-import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.ImageDecoder
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,16 +13,19 @@ import java.io.File
 
 
 class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder>() {
-    private var listOfImages = emptyList<Any>()
+    private var listOfImages = emptyList<Pair<File?, File?>>()
 
     inner class CustomViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val image = view.main_image
 
-        fun bind(item: Any) {
+        fun bind(item: Pair<File?, File?>) {
             lateinit var bitmapToSet: Bitmap
-            when (item) {
-                is Uri -> bitmapToSet = setUriToImageView(image.context, item)
-                is File -> bitmapToSet = setUriToImageView(item)
+            bitmapToSet = if (item.second == null) {
+                uriToBitmap(item.first!!)
+            } else {
+                val firstBitmap = uriToBitmap(item.first!!)
+                val secondBitmap = uriToBitmap(item.second!!)
+                firstBitmap.mergeImages(secondBitmap)
             }
             image.setImageBitmap(bitmapToSet)
         }
@@ -42,17 +44,28 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
         holder.bind(listOfImages[position])
     }
 
-    internal fun setImageList(listOfUris: List<Any>) {
+    internal fun setImageList(listOfUris: List<Pair<File?, File?>>) {
         listOfImages = listOfUris
     }
 
-    private fun setUriToImageView(context: Context, pathFileName: Uri): Bitmap {
-        val mySource = ImageDecoder.createSource(context.contentResolver,pathFileName)
-        return ImageDecoder.decodeBitmap(mySource)
-    }
 
-    private fun setUriToImageView(file: File): Bitmap {
+    private fun uriToBitmap(file: File): Bitmap {
         val mySource = ImageDecoder.createSource(file)
         return ImageDecoder.decodeBitmap(mySource)
     }
+
+    private fun Bitmap.mergeImages(secondImage: Bitmap): Bitmap {
+        val result = Bitmap.createBitmap(width + secondImage.width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(result)
+        canvas.drawBitmap(this.copy(Bitmap.Config.ARGB_8888, false), 0f, 0f, null)
+        canvas.drawBitmap(
+            secondImage.copy(Bitmap.Config.ARGB_8888, false),
+            width.toFloat(),
+            0f,
+            null
+        )
+        return result
+    }
+
+
 }

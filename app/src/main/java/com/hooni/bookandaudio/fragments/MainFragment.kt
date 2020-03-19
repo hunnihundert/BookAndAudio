@@ -25,7 +25,6 @@ class MainFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
     private lateinit var viewPagerAdapter: ViewPager2Adapter
     private lateinit var pickFolder: Button
-    private lateinit var uris: List<Uri>
     private var selectedFolder = Uri.EMPTY
 
     companion object {
@@ -70,8 +69,7 @@ class MainFragment : Fragment() {
     private fun initRecyclerView(view: View) {
         viewPager = view.findViewById(R.id.main_image)
         viewPagerAdapter = ViewPager2Adapter()
-        uris = listOf()
-        viewPagerAdapter.setImageList(uris)
+        viewPagerAdapter.setImageList(listOf())
         viewPager.adapter = viewPagerAdapter
     }
 
@@ -84,8 +82,8 @@ class MainFragment : Fragment() {
     }
 
 
-    private fun getImageList(uri: Uri): List<File> {
-        var resultList = listOf<File>()
+    private fun getImageList(uri: Uri): List<Pair<File?, File?>> {
+        var resultList = listOf<Pair<File?, File?>>()
         if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
@@ -95,6 +93,7 @@ class MainFragment : Fragment() {
         } else {
             val selectedFolder = File("$ROOT_DIRECTORY${uri.path!!.substringAfter("primary:")}")
             val files = selectedFolder.listFiles()
+
             if (files.isNullOrEmpty()) {
                 Toast.makeText(
                     requireContext(),
@@ -104,7 +103,7 @@ class MainFragment : Fragment() {
                 return resultList
             }
             // TODO: reconsider, if there is a non-jpg file in the folder to still show images
-            if (files.all { it.isJpeg() }) {
+            if (files.any { !it.isJpeg() }) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.selected_folder_does_not_contain_images),
@@ -113,7 +112,27 @@ class MainFragment : Fragment() {
                 return resultList
             }
             // pass list to adapter
-            resultList = files.toList()
+
+            val preliminaryResult = files.toMutableList()
+            val result = mutableListOf<Pair<File?, File?>>()
+            result.add(Pair(preliminaryResult.first(), null))
+            preliminaryResult.removeAt(0)
+            result.add(Pair(preliminaryResult.last(), null))
+            preliminaryResult.removeAt(preliminaryResult.size - 1)
+            result.addAll(preliminaryResult.map {
+                if (preliminaryResult.indexOf(it) % 2 == 0) {
+                    Pair(it, preliminaryResult.getOrNull(preliminaryResult.indexOf(it) + 1))
+                } else {
+                    Pair(null, null)
+                }
+            })
+            result.removeAll {
+                it == Pair(null, null)
+            }
+            result.add(result[1])
+            result.removeAt(1)
+
+            resultList = result
             return resultList
         }
     }
