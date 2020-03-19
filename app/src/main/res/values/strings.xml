@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Book and Audio</string>
     <string name="placeholder">This is: %1$s</string>
+    <string name="external_storage_reading_permission_not_granted">Reading External Storage Permission not granted. Aborting.</string>
+    <string name="selected_folder_is_null_or_empty">Selected Folder is empty. Please select correct Folder.</string>
+    <string name="selected_folder_does_not_contain_images">Folder does not contain any images. Please select correct Folder.</string>
+    <string name="viewpager_list_item_image_view_content_description">Main Image</string>
 </resources>
