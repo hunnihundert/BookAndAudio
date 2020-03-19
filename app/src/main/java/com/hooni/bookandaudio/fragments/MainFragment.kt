@@ -112,27 +112,14 @@ class MainFragment : Fragment() {
                 return resultList
             }
             // pass list to adapter
-
-            val preliminaryResult = files.toMutableList()
-            val result = mutableListOf<Pair<File?, File?>>()
-            result.add(Pair(preliminaryResult.first(), null))
-            preliminaryResult.removeAt(0)
-            result.add(Pair(preliminaryResult.last(), null))
-            preliminaryResult.removeAt(preliminaryResult.size - 1)
-            result.addAll(preliminaryResult.map {
-                if (preliminaryResult.indexOf(it) % 2 == 0) {
-                    Pair(it, preliminaryResult.getOrNull(preliminaryResult.indexOf(it) + 1))
-                } else {
-                    Pair(null, null)
-                }
-            })
-            result.removeAll {
-                it == Pair(null, null)
-            }
-            result.add(result[1])
-            result.removeAt(1)
-
-            resultList = result
+            selectedFolder.listFiles()?.let {
+                it.toMutableList<File?>().apply {
+                    add(1, null) // for front cover
+                    if (0 == size % 2)
+                        add(size - 1, null) // for odd inner last page
+                    add(null) // for back cover
+                }.zipWithNext().run { slice(indices step 2) }
+            }?.let { resultList = it }
             return resultList
         }
     }
