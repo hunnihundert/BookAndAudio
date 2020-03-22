@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.ThumbnailAdapter
@@ -28,6 +30,7 @@ class AllFoldersFragment : Fragment() {
         private const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS = 0
     }
 
+    private lateinit var gridlayoutManager: GridLayoutManager
     private lateinit var thumbnailAdapter: ThumbnailAdapter
     private lateinit var thumbnailRecyclerView: RecyclerView
     private lateinit var selectedFolder: Uri
@@ -50,6 +53,9 @@ class AllFoldersFragment : Fragment() {
 
     private fun initRecyclerView(view: View) {
         thumbnailRecyclerView = view.findViewById(R.id.thumbnail_recycler_view)
+        gridlayoutManager =
+            GridLayoutManager(requireContext(), 3, LinearLayoutManager.VERTICAL, false)
+        thumbnailRecyclerView.layoutManager = gridlayoutManager
         thumbnailAdapter = ThumbnailAdapter()
         thumbnailAdapter.setThumbnailList(listOf())
         thumbnailRecyclerView.adapter = thumbnailAdapter
