@@ -42,6 +42,8 @@ class ThumbnailAdapter : RecyclerView.Adapter<ThumbnailAdapter.CustomViewHolder>
     }
 
     internal fun setThumbnailList(thumbnailListToSet: List<Pair<String, File>>) {
-        thumbnailList = thumbnailListToSet
+        thumbnailList = thumbnailListToSet.sortedBy {
+            it.first
+        }
     }
 }
