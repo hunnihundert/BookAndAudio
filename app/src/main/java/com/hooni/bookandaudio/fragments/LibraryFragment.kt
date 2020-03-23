@@ -23,7 +23,7 @@ import com.hooni.bookandaudio.util.Util
 import kotlinx.android.synthetic.main.fragment_thumbnail_viewer.view.*
 import java.io.File
 
-class AllFoldersFragment : Fragment() {
+class LibraryFragment : Fragment() {
 
     companion object {
         private const val PICK_MAIN_FOLDER = 0
@@ -101,6 +101,7 @@ class AllFoldersFragment : Fragment() {
                 it.isDirectory
             }
 
+
             if (subDirectoriesLevel1.isNullOrEmpty()) {
                 Toast.makeText(
                     requireContext(),
@@ -132,7 +133,6 @@ class AllFoldersFragment : Fragment() {
                     getThumbnailFileList(selectedFolder)
                 )
             }
-
         } else {
             Toast.makeText(
                 requireContext(),

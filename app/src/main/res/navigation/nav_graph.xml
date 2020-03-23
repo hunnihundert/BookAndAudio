@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/oneFolderFragment"
-        android:name="com.hooni.bookandaudio.fragments.OneFolderFragment"
+        android:name="com.hooni.bookandaudio.fragments.BookViewFragment"
         android:label="OneFolderFragment"
         tools:layout="@layout/fragment_image_viewer">
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/allFoldersFragment"
-        android:name="com.hooni.bookandaudio.fragments.AllFoldersFragment"
+        android:name="com.hooni.bookandaudio.fragments.LibraryFragment"
         android:label="AllFoldersFragment"
         tools:layout="@layout/fragment_thumbnail_viewer">
         <action

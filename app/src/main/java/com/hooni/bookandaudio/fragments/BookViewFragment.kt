@@ -22,7 +22,7 @@ import com.hooni.bookandaudio.util.Util
 import java.io.File
 import java.util.*
 
-class OneFolderFragment : Fragment() {
+class BookViewFragment : Fragment() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var viewPagerAdapter: ViewPager2Adapter

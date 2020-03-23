@@ -14,7 +14,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/recyclerview_list_item" />
+        app:spanCount="4"
+        tools:listitem="@layout/gridlayout_list_item" />
 
     <Button
         android:id="@+id/allFolderPicker"
