@@ -1,13 +1,13 @@
-package com.hooni.bookandaudio.viewPager2Adapter
+package com.hooni.bookandaudio.adapter
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.ImageDecoder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
+import com.hooni.bookandaudio.util.Util
+import com.hooni.bookandaudio.util.Util.Companion.mergeImages
 import kotlinx.android.synthetic.main.viewpager_list_item.view.*
 import java.io.File
 
@@ -21,15 +21,16 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
         fun bind(item: Pair<File?, File?>) {
             lateinit var bitmapToSet: Bitmap
             bitmapToSet = if (item.second == null) {
-                uriToBitmap(item.first!!)
+                Util.uriToBitmap(item.first!!)
             } else {
-                val firstBitmap = uriToBitmap(item.first!!)
-                val secondBitmap = uriToBitmap(item.second!!)
+                val firstBitmap = Util.uriToBitmap(item.first!!)
+                val secondBitmap = Util.uriToBitmap(item.second!!)
                 firstBitmap.mergeImages(secondBitmap)
             }
             image.setImageBitmap(bitmapToSet)
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.viewpager_list_item,parent,false)
@@ -47,25 +48,4 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
     internal fun setImageList(listOfUris: List<Pair<File?, File?>>) {
         listOfImages = listOfUris
     }
-
-
-    private fun uriToBitmap(file: File): Bitmap {
-        val mySource = ImageDecoder.createSource(file)
-        return ImageDecoder.decodeBitmap(mySource)
-    }
-
-    private fun Bitmap.mergeImages(secondImage: Bitmap): Bitmap {
-        val result = Bitmap.createBitmap(width + secondImage.width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(result)
-        canvas.drawBitmap(this.copy(Bitmap.Config.ARGB_8888, false), 0f, 0f, null)
-        canvas.drawBitmap(
-            secondImage.copy(Bitmap.Config.ARGB_8888, false),
-            width.toFloat(),
-            0f,
-            null
-        )
-        return result
-    }
-
-
 }
