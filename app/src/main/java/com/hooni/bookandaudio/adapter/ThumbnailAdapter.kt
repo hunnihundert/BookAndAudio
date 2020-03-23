@@ -29,7 +29,6 @@ class ThumbnailAdapter(model: SharedViewModel) :
             title.text = titleToSet
             itemView.setOnClickListener {
                 val folderWithImages = thumbnailList[adapterPosition].second.parentFile
-
                 folderWithImages?.let {
                     // set LiveData
                     myModel.setLibraryFolderList(it)
