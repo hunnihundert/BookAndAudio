@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.ThumbnailAdapter
 import com.hooni.bookandaudio.util.Util
+import com.hooni.bookandaudio.viewmodel.SharedViewModel
 import kotlinx.android.synthetic.main.fragment_thumbnail_viewer.view.*
 import java.io.File
 
@@ -30,6 +32,7 @@ class LibraryFragment : Fragment() {
         private const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS = 0
     }
 
+    private val model: SharedViewModel by activityViewModels()
     private lateinit var gridlayoutManager: GridLayoutManager
     private lateinit var thumbnailAdapter: ThumbnailAdapter
     private lateinit var thumbnailRecyclerView: RecyclerView
@@ -56,7 +59,7 @@ class LibraryFragment : Fragment() {
         gridlayoutManager =
             GridLayoutManager(requireContext(), 3, LinearLayoutManager.VERTICAL, false)
         thumbnailRecyclerView.layoutManager = gridlayoutManager
-        thumbnailAdapter = ThumbnailAdapter()
+        thumbnailAdapter = ThumbnailAdapter(model)
         thumbnailAdapter.setThumbnailList(listOf())
         thumbnailRecyclerView.adapter = thumbnailAdapter
     }
