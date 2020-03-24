@@ -7,7 +7,7 @@ import java.io.File
 class SharedViewModel : ViewModel() {
     val selectedBookFile = MutableLiveData<File>()
 
-    fun setLibraryFolderList(selectedFolder: File) {
+    fun setBookFolder(selectedFolder: File) {
         selectedBookFile.value = selectedFolder
     }
 }

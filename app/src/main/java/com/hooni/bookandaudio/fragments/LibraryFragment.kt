@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,9 +54,10 @@ class LibraryFragment : Fragment() {
     private fun initRecyclerView(view: View) {
         thumbnailRecyclerView = view.findViewById(R.id.thumbnail_recycler_view)
         gridlayoutManager =
-            GridLayoutManager(requireContext(), 3, LinearLayoutManager.VERTICAL, false)
+            GridLayoutManager(requireContext(), 6, LinearLayoutManager.VERTICAL, false)
         thumbnailRecyclerView.layoutManager = gridlayoutManager
-        thumbnailAdapter = ThumbnailAdapter(model)
+        thumbnailAdapter =
+            ThumbnailAdapter { selectedBook: File -> displaySelectedBook(selectedBook) }
         thumbnailAdapter.setThumbnailList(listOf())
         thumbnailRecyclerView.adapter = thumbnailAdapter
     }
@@ -139,5 +141,10 @@ class LibraryFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun displaySelectedBook(_selectedBook: File) {
+        model.setBookFolder(_selectedBook)
+        findNavController().navigate(R.id.action_allFoldersFragment_to_oneFolderFragment)
     }
 }
