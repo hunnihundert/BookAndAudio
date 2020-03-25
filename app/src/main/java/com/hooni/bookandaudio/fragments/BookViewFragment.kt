@@ -6,13 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.ViewPager2Adapter
+import com.hooni.bookandaudio.databinding.FragmentImageViewerBinding
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
 import java.io.File
 
 class BookViewFragment : Fragment() {
+    private var _binding: FragmentImageViewerBinding? = null
+    private val bookViewFragmentBinding get() = _binding!!
 
     private lateinit var viewPager: ViewPager2
     private lateinit var viewPagerAdapter: ViewPager2Adapter
@@ -24,14 +28,15 @@ class BookViewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_image_viewer, container, false)
+        _binding = FragmentImageViewerBinding.inflate(layoutInflater)
+        val view = bookViewFragmentBinding.root
         initRecyclerView(view)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model.selectedBookFile.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        model.selectedBookFile.observe(viewLifecycleOwner, Observer {
             viewPagerAdapter.setImageList(getImageList(it))
             viewPagerAdapter.notifyDataSetChanged()
         })
