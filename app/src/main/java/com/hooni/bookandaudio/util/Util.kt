@@ -11,22 +11,19 @@ class Util {
         const val ROOT_DIRECTORY = "/storage/emulated/0/"
 
         internal fun fileToBitmap(file: File): Bitmap {
-            return BitmapFactory.decodeFile(file.path)
-            // val mySource = ImageDecoder.createSource(file)
-            // return ImageDecoder.decodeBitmap(mySource)
+            val options = BitmapFactory.Options().apply {
+                outConfig = Bitmap.Config.ARGB_8888
+                inMutable = true
+            }
+            return BitmapFactory.decodeFile(file.path, options)
         }
 
         internal fun Bitmap.mergeImages(secondImage: Bitmap): Bitmap {
             val result =
                 Bitmap.createBitmap(width + secondImage.width, height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(result)
-            canvas.drawBitmap(this.copy(Bitmap.Config.ARGB_8888, false), 0f, 0f, null)
-            canvas.drawBitmap(
-                secondImage.copy(Bitmap.Config.ARGB_8888, false),
-                width.toFloat(),
-                0f,
-                null
-            )
+            canvas.drawBitmap(this, 0f, 0f, null)
+            canvas.drawBitmap(secondImage, width.toFloat(), 0f, null)
             return result
         }
     }
