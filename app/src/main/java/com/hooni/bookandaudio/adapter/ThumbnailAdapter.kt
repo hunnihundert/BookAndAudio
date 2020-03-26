@@ -1,6 +1,7 @@
 package com.hooni.bookandaudio.adapter
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +25,7 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
             clickListener: (File) -> Unit
         ) {
             val titleToSet = item.first
-            val bitmapToSet = Util.uriToBitmap(item.second)
+            val bitmapToSet = Util.fileToBitmap(item.second)
             val resizedBitmapToSet = Bitmap.createScaledBitmap(bitmapToSet, 150, 150, false)
             thumbnail.setImageBitmap(resizedBitmapToSet)
             title.text = titleToSet
@@ -56,5 +57,12 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
         thumbnailList = thumbnailListToSet.sortedBy {
             it.first
         }
+    }
+
+    private fun getBitmapDimensions(bitmap: Bitmap): List<Int> {
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        return listOf()
     }
 }

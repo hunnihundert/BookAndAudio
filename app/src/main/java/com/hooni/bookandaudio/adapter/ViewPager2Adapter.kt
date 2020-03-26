@@ -21,10 +21,10 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
         fun bind(item: Pair<File?, File?>) {
             lateinit var bitmapToSet: Bitmap
             bitmapToSet = if (item.second == null) {
-                Util.uriToBitmap(item.first!!)
+                Util.fileToBitmap(item.first!!)
             } else {
-                val firstBitmap = Util.uriToBitmap(item.first!!)
-                val secondBitmap = Util.uriToBitmap(item.second!!)
+                val firstBitmap = Util.fileToBitmap(item.first!!)
+                val secondBitmap = Util.fileToBitmap(item.second!!)
                 firstBitmap.mergeImages(secondBitmap)
             }
             image.setImageBitmap(bitmapToSet)
