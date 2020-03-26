@@ -1,8 +1,8 @@
 package com.hooni.bookandaudio.util
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.ImageDecoder
 import java.io.File
 
 class Util {
@@ -10,9 +10,10 @@ class Util {
 
         const val ROOT_DIRECTORY = "/storage/emulated/0/"
 
-        internal fun uriToBitmap(file: File): Bitmap {
-            val mySource = ImageDecoder.createSource(file)
-            return ImageDecoder.decodeBitmap(mySource)
+        internal fun fileToBitmap(file: File): Bitmap {
+            return BitmapFactory.decodeFile(file.path)
+            // val mySource = ImageDecoder.createSource(file)
+            // return ImageDecoder.decodeBitmap(mySource)
         }
 
         internal fun Bitmap.mergeImages(secondImage: Bitmap): Bitmap {

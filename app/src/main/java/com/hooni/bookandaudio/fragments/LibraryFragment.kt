@@ -14,17 +14,22 @@ import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.ThumbnailAdapter
+import com.hooni.bookandaudio.databinding.FragmentThumbnailViewerBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
-import kotlinx.android.synthetic.main.fragment_thumbnail_viewer.view.*
 import java.io.File
 
 class LibraryFragment : Fragment() {
+
+    private var _binding: FragmentThumbnailViewerBinding? = null
+    private val libraryFragmentBinding get() = _binding!!
 
     companion object {
         private const val PICK_MAIN_FOLDER = 0
@@ -42,9 +47,14 @@ class LibraryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = layoutInflater.inflate(R.layout.fragment_thumbnail_viewer, container, false)
+        _binding = FragmentThumbnailViewerBinding.inflate(layoutInflater)
+        val view = libraryFragmentBinding.root
         initRecyclerView(view)
-        view.allFolderPicker.setOnClickListener {
+        model.thumbnails.observe(viewLifecycleOwner, Observer {
+            thumbnailAdapter.setThumbnailList(it)
+            thumbnailAdapter.notifyDataSetChanged()
+        })
+        libraryFragmentBinding.allFolderPicker.setOnClickListener {
             pickFolder()
         }
         return view
@@ -53,9 +63,10 @@ class LibraryFragment : Fragment() {
     private fun initRecyclerView(view: View) {
         thumbnailRecyclerView = view.findViewById(R.id.thumbnail_recycler_view)
         gridlayoutManager =
-            GridLayoutManager(requireContext(), 3, LinearLayoutManager.VERTICAL, false)
+            GridLayoutManager(requireContext(), 6, LinearLayoutManager.VERTICAL, false)
         thumbnailRecyclerView.layoutManager = gridlayoutManager
-        thumbnailAdapter = ThumbnailAdapter(model)
+        thumbnailAdapter =
+            ThumbnailAdapter { selectedBook: File -> displaySelectedBook(selectedBook) }
         thumbnailAdapter.setThumbnailList(listOf())
         thumbnailRecyclerView.adapter = thumbnailAdapter
     }
@@ -77,48 +88,28 @@ class LibraryFragment : Fragment() {
                 PICK_MAIN_FOLDER -> {
                     data?.data?.also {
                         selectedFolder = it
-                        thumbnailAdapter.setThumbnailList(getThumbnailFileList(it))
+                        setThumbnailFileList(it)
                     }
                 }
             }
-            thumbnailAdapter.notifyDataSetChanged()
         }
     }
 
-    private fun getThumbnailFileList(mainFolder: Uri): List<Pair<String, File>> {
-        var resultList = listOf<Pair<String, File>>()
-        lateinit var tempTitleThumbnail: Pair<String, File>
+    private fun setThumbnailFileList(mainFolder: Uri) {
         if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                 PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS
             )
         } else {
-            val selectedFolder =
-                File("${Util.ROOT_DIRECTORY}${mainFolder.path!!.substringAfter("primary:")}")
-            val subDirectoriesLevel1 = selectedFolder.listFiles()?.filter {
-                it.isDirectory
-            }
-
-
-            if (subDirectoriesLevel1.isNullOrEmpty()) {
+            if (!model.setThumbnails(mainFolder)) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.selected_folder_is_null_or_empty),
                     Toast.LENGTH_SHORT
                 ).show()
-                return resultList
             }
-            val tempList = mutableListOf<Pair<String, File>>()
-            for (book in subDirectoriesLevel1) {
-                val nameOfTheBook = book.name.substringAfterLast("/")
-                val imageOfTheBook = book.listFiles()[1].listFiles()[0]
-                tempTitleThumbnail = Pair(nameOfTheBook, imageOfTheBook)
-                tempList.add(tempTitleThumbnail)
-            }
-            resultList = tempList
         }
-        return resultList
     }
 
     override fun onRequestPermissionsResult(
@@ -128,9 +119,8 @@ class LibraryFragment : Fragment() {
     ) {
         if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
-                PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS -> thumbnailAdapter.setThumbnailList(
-                    getThumbnailFileList(selectedFolder)
-                )
+                PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS ->
+                    setThumbnailFileList(selectedFolder)
             }
         } else {
             Toast.makeText(
@@ -139,5 +129,10 @@ class LibraryFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun displaySelectedBook(_selectedBook: File) {
+        model.setBookFolder(_selectedBook)
+        findNavController().navigate(R.id.action_allFoldersFragment_to_oneFolderFragment)
     }
 }
