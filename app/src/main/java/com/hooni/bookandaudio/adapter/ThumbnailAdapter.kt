@@ -1,26 +1,26 @@
 package com.hooni.bookandaudio.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.hooni.bookandaudio.R
+import com.hooni.bookandaudio.databinding.GridlayoutListItemBinding
 import com.hooni.bookandaudio.util.Util
-import kotlinx.android.synthetic.main.gridlayout_list_item.view.*
 import java.io.File
 
 class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
     RecyclerView.Adapter<ThumbnailAdapter.CustomViewHolder>() {
     private var thumbnailList = listOf<Pair<String, File>>()
+    private lateinit var binding: GridlayoutListItemBinding
 
     companion object {
         private const val REQUIRED_THUMBNAIL_WIDTH = 200
         private const val REQUIRED_THUMBNAIL_HEIGHT = 180
     }
 
-    inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val thumbnail = view.thumbnail
-        private val title = view.title
+    inner class CustomViewHolder(binding: GridlayoutListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        private val thumbnail = binding.thumbnail
+        private val title = binding.title
 
 
         fun bind(
@@ -46,9 +46,9 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.gridlayout_list_item, parent, false)
-        return CustomViewHolder(view)
+        binding =
+            GridlayoutListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CustomViewHolder(binding)
     }
 
     override fun getItemCount(): Int {

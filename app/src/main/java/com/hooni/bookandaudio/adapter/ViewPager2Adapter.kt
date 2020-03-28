@@ -2,21 +2,21 @@ package com.hooni.bookandaudio.adapter
 
 import android.graphics.Bitmap
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.hooni.bookandaudio.R
+import com.hooni.bookandaudio.databinding.ViewpagerListItemBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.util.Util.Companion.mergeImages
-import kotlinx.android.synthetic.main.viewpager_list_item.view.*
 import java.io.File
 
 
 class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder>() {
     private var listOfImages = emptyList<Pair<File?, File?>>()
+    lateinit var binding: ViewpagerListItemBinding
 
-    inner class CustomViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val image = view.main_image
+    inner class CustomViewHolder(binding: ViewpagerListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        private val image = binding.mainImage
 
         fun bind(item: Pair<File?, File?>) {
             lateinit var bitmapToSet: Bitmap
@@ -33,8 +33,9 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.viewpager_list_item,parent,false)
-        return CustomViewHolder(view)
+        binding =
+            ViewpagerListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CustomViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
