@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -51,6 +52,7 @@ class LibraryFragment : Fragment() {
         _binding = FragmentThumbnailViewerBinding.inflate(layoutInflater)
         val view = libraryFragmentBinding.root
         initRecyclerView(view)
+        setScreenWidth()
         model.thumbnails.observe(viewLifecycleOwner, Observer {
             thumbnailAdapter.setThumbnailList(it)
             thumbnailAdapter.notifyDataSetChanged()
@@ -142,5 +144,11 @@ class LibraryFragment : Fragment() {
     private fun displaySelectedBook(_selectedBook: File) {
         model.setBookFolder(_selectedBook)
         findNavController().navigate(R.id.action_allFoldersFragment_to_oneFolderFragment)
+    }
+
+    private fun setScreenWidth() {
+        val rect = Rect()
+        libraryFragmentBinding.root.getWindowVisibleDisplayFrame(rect)
+        Util.screenWidth = rect.width()
     }
 }

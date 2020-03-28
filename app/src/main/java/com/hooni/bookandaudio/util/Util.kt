@@ -7,16 +7,8 @@ import java.io.File
 
 class Util {
     companion object {
-
+        var screenWidth = 0
         const val ROOT_DIRECTORY = "/storage/emulated/0/"
-
-        internal fun fileToBitmap(file: File): Bitmap {
-            val options = BitmapFactory.Options().apply {
-                outConfig = Bitmap.Config.ARGB_8888
-                inMutable = true
-            }
-            return BitmapFactory.decodeFile(file.path, options)
-        }
 
         internal fun Bitmap.mergeImages(secondImage: Bitmap): Bitmap {
             val result =
@@ -36,12 +28,32 @@ class Util {
             val (width, height) = options.run { outWidth to outHeight }
             var inSampleSize = 1
 
-            if (height > reqHeight || width > reqWidth) {
-                val halfWidth = width / 2
-                val halfHeight = height / 2
+            // if no value is entered for reqHeight or reqWidth, it will be set to 0
+            // meaning the corresponding dimension is irrelevant
+            if (reqHeight != 0 && reqWidth != 0) {
+                if (height > reqHeight || width > reqWidth) {
+                    val halfWidth = width / 2
+                    val halfHeight = height / 2
 
-                while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
-                    inSampleSize += 1
+                    while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
+                        inSampleSize += 1
+                    }
+                }
+            } else if (reqHeight == 0) {
+                if (width > reqWidth) {
+                    val halfWidth = width / 2
+
+                    while (halfWidth / inSampleSize >= reqWidth) {
+                        inSampleSize += 1
+                    }
+                }
+            } else {
+                if (height > reqHeight) {
+                    val halfHeight = height / 2
+
+                    while (halfHeight / inSampleSize >= reqHeight) {
+                        inSampleSize += 1
+                    }
                 }
             }
 
@@ -50,8 +62,8 @@ class Util {
 
         internal fun decodeSampledBitmapFromFile(
             file: File,
-            reqWidth: Int,
-            reqHeight: Int
+            reqWidth: Int = 0,
+            reqHeight: Int = 0
         ): Bitmap {
             return BitmapFactory.Options().run {
                 inJustDecodeBounds = true

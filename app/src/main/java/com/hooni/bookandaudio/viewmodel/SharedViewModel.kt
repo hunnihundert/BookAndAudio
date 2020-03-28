@@ -10,11 +10,11 @@ class SharedViewModel : ViewModel() {
     val selectedBookFile = MutableLiveData<File>()
     val thumbnails = MutableLiveData<List<Pair<String, File>>>()
 
-    fun setBookFolder(selectedFolder: File) {
+    internal fun setBookFolder(selectedFolder: File) {
         selectedBookFile.value = selectedFolder
     }
 
-    fun setThumbnails(uriOfMainFolder: Uri): Boolean {
+    internal fun setThumbnails(uriOfMainFolder: Uri): Boolean {
         var isValidDirectory = false
         lateinit var tempTitleThumbnail: Pair<String, File>
         val selectedFolder =
@@ -28,7 +28,7 @@ class SharedViewModel : ViewModel() {
             val tempList = mutableListOf<Pair<String, File>>()
             for (book in subDirectoriesLevel) {
                 val nameOfTheBook = book.name.substringAfterLast("/")
-                val imageOfTheBook = book.listFiles()[1].listFiles()[0]
+                val imageOfTheBook = book.listFiles()!![1].listFiles()!![0]
                 tempTitleThumbnail = Pair(nameOfTheBook, imageOfTheBook)
                 tempList.add(tempTitleThumbnail)
             }
@@ -36,5 +36,6 @@ class SharedViewModel : ViewModel() {
         }
         return isValidDirectory
     }
+
 
 }
