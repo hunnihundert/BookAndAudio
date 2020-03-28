@@ -60,6 +60,11 @@ class LibraryFragment : Fragment() {
         return view
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initRecyclerView(view: View) {
         thumbnailRecyclerView = view.findViewById(R.id.thumbnail_recycler_view)
         gridlayoutManager =

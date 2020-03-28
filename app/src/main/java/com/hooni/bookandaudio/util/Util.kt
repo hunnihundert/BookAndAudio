@@ -26,5 +26,40 @@ class Util {
             canvas.drawBitmap(secondImage, width.toFloat(), 0f, null)
             return result
         }
+
+
+        private fun calculateInSampleSize(
+            options: BitmapFactory.Options,
+            reqWidth: Int,
+            reqHeight: Int
+        ): Int {
+            val (width, height) = options.run { outWidth to outHeight }
+            var inSampleSize = 1
+
+            if (width > reqWidth || height > reqHeight) {
+                val halfWidth = width / 2
+                val halfHeight = width / 2
+
+                while (halfWidth / inSampleSize >= reqWidth && halfHeight / inSampleSize >= reqWidth) {
+                    inSampleSize *= 2
+                }
+            }
+
+            return inSampleSize
+        }
+
+        internal fun decodeSampledBitmapFromFile(
+            file: File,
+            reqWidth: Int,
+            reqHeight: Int
+        ): Bitmap {
+            return BitmapFactory.Options().run {
+                inJustDecodeBounds = true
+                BitmapFactory.decodeFile(file.path, this)
+                inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+                inJustDecodeBounds = false
+                BitmapFactory.decodeFile(file.path, this)
+            }
+        }
     }
 }
