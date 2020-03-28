@@ -34,6 +34,7 @@ class LibraryFragment : Fragment() {
     companion object {
         private const val PICK_MAIN_FOLDER = 0
         private const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS = 0
+        private const val BOOKS_PER_LINE = 4
     }
 
     private val model: SharedViewModel by activityViewModels()
@@ -68,7 +69,7 @@ class LibraryFragment : Fragment() {
     private fun initRecyclerView(view: View) {
         thumbnailRecyclerView = view.findViewById(R.id.thumbnail_recycler_view)
         gridlayoutManager =
-            GridLayoutManager(requireContext(), 6, LinearLayoutManager.VERTICAL, false)
+            GridLayoutManager(requireContext(), BOOKS_PER_LINE, LinearLayoutManager.VERTICAL, false)
         thumbnailRecyclerView.layoutManager = gridlayoutManager
         thumbnailAdapter =
             ThumbnailAdapter { selectedBook: File -> displaySelectedBook(selectedBook) }
@@ -85,6 +86,25 @@ class LibraryFragment : Fragment() {
             Intent.createChooser(intent, "Select app to choose folder"),
             PICK_MAIN_FOLDER
         )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS ->
+                    setThumbnailFileList(selectedFolder)
+            }
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.external_storage_reading_permission_not_granted),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -107,6 +127,7 @@ class LibraryFragment : Fragment() {
                 PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS
             )
         } else {
+            // setThumbnails() returns false if folder is null or empty
             if (!model.setThumbnails(mainFolder)) {
                 Toast.makeText(
                     requireContext(),
@@ -117,24 +138,6 @@ class LibraryFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            when (requestCode) {
-                PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS ->
-                    setThumbnailFileList(selectedFolder)
-            }
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.external_storage_reading_permission_not_granted),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
 
     private fun displaySelectedBook(_selectedBook: File) {
         model.setBookFolder(_selectedBook)

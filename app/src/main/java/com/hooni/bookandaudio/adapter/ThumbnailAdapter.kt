@@ -13,6 +13,11 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
     RecyclerView.Adapter<ThumbnailAdapter.CustomViewHolder>() {
     private var thumbnailList = listOf<Pair<String, File>>()
 
+    companion object {
+        private const val REQUIRED_THUMBNAIL_WIDTH = 200
+        private const val REQUIRED_THUMBNAIL_HEIGHT = 180
+    }
+
     inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val thumbnail = view.thumbnail
         private val title = view.title
@@ -23,7 +28,11 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
             clickListener: (File) -> Unit
         ) {
             val titleToSet = item.first
-            val resizedBitmapToSet = Util.decodeSampledBitmapFromFile(item.second, 150, 150)
+            val resizedBitmapToSet = Util.decodeSampledBitmapFromFile(
+                item.second,
+                REQUIRED_THUMBNAIL_WIDTH,
+                REQUIRED_THUMBNAIL_HEIGHT
+            )
             thumbnail.setImageBitmap(resizedBitmapToSet)
             title.text = titleToSet
 

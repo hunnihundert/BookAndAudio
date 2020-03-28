@@ -36,12 +36,12 @@ class Util {
             val (width, height) = options.run { outWidth to outHeight }
             var inSampleSize = 1
 
-            if (width > reqWidth || height > reqHeight) {
+            if (height > reqHeight || width > reqWidth) {
                 val halfWidth = width / 2
-                val halfHeight = width / 2
+                val halfHeight = height / 2
 
-                while (halfWidth / inSampleSize >= reqWidth && halfHeight / inSampleSize >= reqWidth) {
-                    inSampleSize *= 2
+                while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
+                    inSampleSize += 1
                 }
             }
 
