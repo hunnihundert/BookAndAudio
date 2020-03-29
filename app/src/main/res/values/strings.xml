@@ -5,4 +5,5 @@
     <string name="selected_folder_is_null_or_empty">Selected Folder is empty. Please select correct Folder.</string>
     <string name="selected_folder_does_not_contain_images">Folder does not contain any images. Please select correct Folder.</string>
     <string name="viewpager_list_item_image_view_content_description">Main Image</string>
+    <string name="book_page">Book Page</string>
 </resources>

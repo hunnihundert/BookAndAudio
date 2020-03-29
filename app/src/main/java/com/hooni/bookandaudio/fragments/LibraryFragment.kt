@@ -22,14 +22,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.ThumbnailAdapter
-import com.hooni.bookandaudio.databinding.FragmentThumbnailViewerBinding
+import com.hooni.bookandaudio.databinding.FragmentLibraryViewerBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
 import java.io.File
 
 class LibraryFragment : Fragment() {
 
-    private var _binding: FragmentThumbnailViewerBinding? = null
+    private var _binding: FragmentLibraryViewerBinding? = null
     private val libraryFragmentBinding get() = _binding!!
 
     companion object {
@@ -49,7 +49,7 @@ class LibraryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentThumbnailViewerBinding.inflate(layoutInflater)
+        _binding = FragmentLibraryViewerBinding.inflate(layoutInflater)
         val view = libraryFragmentBinding.root
         initRecyclerView(view)
         setScreenWidth()

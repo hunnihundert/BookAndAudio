@@ -3,21 +3,21 @@ package com.hooni.bookandaudio.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.hooni.bookandaudio.databinding.GridlayoutListItemBinding
+import com.hooni.bookandaudio.databinding.LibraryListItemBinding
 import com.hooni.bookandaudio.util.Util
 import java.io.File
 
 class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
     RecyclerView.Adapter<ThumbnailAdapter.CustomViewHolder>() {
     private var thumbnailList = listOf<Pair<String, File>>()
-    private lateinit var binding: GridlayoutListItemBinding
+    private lateinit var binding: LibraryListItemBinding
 
     companion object {
         private const val REQUIRED_THUMBNAIL_WIDTH = 200
         private const val REQUIRED_THUMBNAIL_HEIGHT = 180
     }
 
-    inner class CustomViewHolder(binding: GridlayoutListItemBinding) :
+    inner class CustomViewHolder(binding: LibraryListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private val thumbnail = binding.thumbnail
         private val title = binding.title
@@ -47,7 +47,7 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         binding =
-            GridlayoutListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            LibraryListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 

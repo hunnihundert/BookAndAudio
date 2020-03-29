@@ -4,17 +4,17 @@ import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.hooni.bookandaudio.databinding.ViewpagerListItemBinding
+import com.hooni.bookandaudio.databinding.BookPageListItemBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.util.Util.Companion.mergeImages
 import java.io.File
 
 
-class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder>() {
+class BookViewerAdapter : RecyclerView.Adapter<BookViewerAdapter.CustomViewHolder>() {
     private var listOfImages = emptyList<Pair<File?, File?>>()
-    lateinit var binding: ViewpagerListItemBinding
+    lateinit var binding: BookPageListItemBinding
 
-    inner class CustomViewHolder(binding: ViewpagerListItemBinding) :
+    inner class CustomViewHolder(binding: BookPageListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private val image = binding.mainImage
 
@@ -36,7 +36,7 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         binding =
-            ViewpagerListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            BookPageListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
