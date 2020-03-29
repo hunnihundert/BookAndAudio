@@ -9,17 +9,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.hooni.bookandaudio.R
-import com.hooni.bookandaudio.adapter.ViewPager2Adapter
-import com.hooni.bookandaudio.databinding.FragmentImageViewerBinding
+import com.hooni.bookandaudio.adapter.BookViewerAdapter
+import com.hooni.bookandaudio.data.Book
+import com.hooni.bookandaudio.databinding.FragmentBookViewerBinding
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
 import java.io.File
 
 class BookViewFragment : Fragment() {
-    private var _binding: FragmentImageViewerBinding? = null
+    private var _binding: FragmentBookViewerBinding? = null
     private val bookViewFragmentBinding get() = _binding!!
 
     private lateinit var viewPager: ViewPager2
-    private lateinit var viewPagerAdapter: ViewPager2Adapter
+    private lateinit var viewPagerAdapter: BookViewerAdapter
     private val model: SharedViewModel by activityViewModels()
 
 
@@ -28,10 +29,15 @@ class BookViewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentImageViewerBinding.inflate(layoutInflater)
+        _binding = FragmentBookViewerBinding.inflate(layoutInflater)
         val view = bookViewFragmentBinding.root
         initRecyclerView(view)
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,15 +50,15 @@ class BookViewFragment : Fragment() {
 
     private fun initRecyclerView(view: View) {
         viewPager = view.findViewById(R.id.main_image)
-        viewPagerAdapter = ViewPager2Adapter()
+        viewPagerAdapter = BookViewerAdapter()
         viewPagerAdapter.setImageList(listOf())
         viewPager.adapter = viewPagerAdapter
     }
 
-    private fun getImageList(selectedBookFile: File): List<Pair<File?, File?>> {
+    private fun getImageList(selectedBook: Book): List<Pair<File?, File?>> {
         var resultList = listOf<Pair<File?, File?>>()
 
-        selectedBookFile.listFiles()?.let {
+        selectedBook.imageDirectory.listFiles()?.let {
             it.toMutableList<File?>().apply {
                 add(1, null)
                 if (0 == size % 2)

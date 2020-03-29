@@ -3,20 +3,21 @@ package com.hooni.bookandaudio.viewmodel
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.hooni.bookandaudio.data.Book
 import com.hooni.bookandaudio.util.Util
 import java.io.File
 
 class SharedViewModel : ViewModel() {
-    val selectedBookFile = MutableLiveData<File>()
-    val thumbnails = MutableLiveData<List<Pair<String, File>>>()
+    val selectedBookFile = MutableLiveData<Book>()
+    val library = MutableLiveData<List<Book>>()
 
-    fun setBookFolder(selectedFolder: File) {
-        selectedBookFile.value = selectedFolder
+    internal fun setBookFolder(selectedBook: Book) {
+        selectedBookFile.value = selectedBook
     }
 
-    fun setThumbnails(uriOfMainFolder: Uri): Boolean {
+    internal fun setLibrary(uriOfMainFolder: Uri): Boolean {
         var isValidDirectory = false
-        lateinit var tempTitleThumbnail: Pair<String, File>
+        lateinit var bookData: Book
         val selectedFolder =
             File("${Util.ROOT_DIRECTORY}${uriOfMainFolder.path!!.substringAfter("primary:")}")
         val subDirectoriesLevel = selectedFolder.listFiles()?.filter {
@@ -25,16 +26,18 @@ class SharedViewModel : ViewModel() {
 
         if (!subDirectoriesLevel.isNullOrEmpty()) {
             isValidDirectory = true
-            val tempList = mutableListOf<Pair<String, File>>()
+            val tempList = mutableListOf<Book>()
             for (book in subDirectoriesLevel) {
-                val nameOfTheBook = book.name.substringAfterLast("/")
-                val imageOfTheBook = book.listFiles()[1].listFiles()[0]
-                tempTitleThumbnail = Pair(nameOfTheBook, imageOfTheBook)
-                tempList.add(tempTitleThumbnail)
+                val bookTitle = book.name.substringAfterLast("/")
+                val bookImages = book.listFiles()!![1]
+                val bookMedia = book.listFiles()!![0]
+                bookData = Book(bookTitle, bookImages, bookMedia)
+                tempList.add(bookData)
             }
-            thumbnails.value = tempList
+            library.value = tempList
         }
         return isValidDirectory
     }
+
 
 }

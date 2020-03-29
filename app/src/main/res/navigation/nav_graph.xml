@@ -9,7 +9,7 @@
         android:id="@+id/oneFolderFragment"
         android:name="com.hooni.bookandaudio.fragments.BookViewFragment"
         android:label="OneFolderFragment"
-        tools:layout="@layout/fragment_image_viewer">
+        tools:layout="@layout/fragment_book_viewer">
         <action
             android:id="@+id/action_oneFolderFragment_to_allFoldersFragment"
             app:destination="@id/allFoldersFragment" />
@@ -18,7 +18,7 @@
         android:id="@+id/allFoldersFragment"
         android:name="com.hooni.bookandaudio.fragments.LibraryFragment"
         android:label="AllFoldersFragment"
-        tools:layout="@layout/fragment_thumbnail_viewer">
+        tools:layout="@layout/fragment_library_viewer">
         <action
             android:id="@+id/action_allFoldersFragment_to_oneFolderFragment"
             app:destination="@id/oneFolderFragment" />

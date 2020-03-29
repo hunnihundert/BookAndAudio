@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/allFolderPicker"
         app:spanCount="4"
-        tools:listitem="@layout/gridlayout_list_item" />
+        tools:listitem="@layout/library_list_item" />
 
     <Button
         android:id="@+id/allFolderPicker"

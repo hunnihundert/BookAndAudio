@@ -2,29 +2,31 @@ package com.hooni.bookandaudio.adapter
 
 import android.graphics.Bitmap
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.hooni.bookandaudio.R
+import com.hooni.bookandaudio.databinding.BookPageListItemBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.util.Util.Companion.mergeImages
-import kotlinx.android.synthetic.main.viewpager_list_item.view.*
 import java.io.File
 
 
-class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder>() {
+class BookViewerAdapter : RecyclerView.Adapter<BookViewerAdapter.CustomViewHolder>() {
     private var listOfImages = emptyList<Pair<File?, File?>>()
+    lateinit var binding: BookPageListItemBinding
 
-    inner class CustomViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val image = view.main_image
+    inner class CustomViewHolder(binding: BookPageListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        private val image = binding.mainImage
 
         fun bind(item: Pair<File?, File?>) {
             lateinit var bitmapToSet: Bitmap
             bitmapToSet = if (item.second == null) {
-                Util.fileToBitmap(item.first!!)
+                Util.decodeSampledBitmapFromFile(item.first!!, Util.screenWidth / 4)
             } else {
-                val firstBitmap = Util.fileToBitmap(item.first!!)
-                val secondBitmap = Util.fileToBitmap(item.second!!)
+                val firstBitmap =
+                    Util.decodeSampledBitmapFromFile(item.first!!, Util.screenWidth / 4)
+                val secondBitmap =
+                    Util.decodeSampledBitmapFromFile(item.second!!, Util.screenWidth / 4)
                 firstBitmap.mergeImages(secondBitmap)
             }
             image.setImageBitmap(bitmapToSet)
@@ -33,8 +35,9 @@ class ViewPager2Adapter: RecyclerView.Adapter<ViewPager2Adapter.CustomViewHolder
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.viewpager_list_item,parent,false)
-        return CustomViewHolder(view)
+        binding =
+            BookPageListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CustomViewHolder(binding)
     }
 
     override fun getItemCount(): Int {

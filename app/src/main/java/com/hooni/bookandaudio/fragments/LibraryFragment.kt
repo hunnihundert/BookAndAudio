@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -21,19 +22,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.ThumbnailAdapter
-import com.hooni.bookandaudio.databinding.FragmentThumbnailViewerBinding
+import com.hooni.bookandaudio.data.Book
+import com.hooni.bookandaudio.databinding.FragmentLibraryViewerBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
-import java.io.File
 
 class LibraryFragment : Fragment() {
 
-    private var _binding: FragmentThumbnailViewerBinding? = null
+    private var _binding: FragmentLibraryViewerBinding? = null
     private val libraryFragmentBinding get() = _binding!!
 
     companion object {
         private const val PICK_MAIN_FOLDER = 0
         private const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS = 0
+        private const val BOOKS_PER_LINE = 4
     }
 
     private val model: SharedViewModel by activityViewModels()
@@ -47,10 +49,11 @@ class LibraryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentThumbnailViewerBinding.inflate(layoutInflater)
+        _binding = FragmentLibraryViewerBinding.inflate(layoutInflater)
         val view = libraryFragmentBinding.root
         initRecyclerView(view)
-        model.thumbnails.observe(viewLifecycleOwner, Observer {
+        setScreenWidth()
+        model.library.observe(viewLifecycleOwner, Observer {
             thumbnailAdapter.setThumbnailList(it)
             thumbnailAdapter.notifyDataSetChanged()
         })
@@ -60,13 +63,18 @@ class LibraryFragment : Fragment() {
         return view
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun initRecyclerView(view: View) {
         thumbnailRecyclerView = view.findViewById(R.id.thumbnail_recycler_view)
         gridlayoutManager =
-            GridLayoutManager(requireContext(), 6, LinearLayoutManager.VERTICAL, false)
+            GridLayoutManager(requireContext(), BOOKS_PER_LINE, LinearLayoutManager.VERTICAL, false)
         thumbnailRecyclerView.layoutManager = gridlayoutManager
         thumbnailAdapter =
-            ThumbnailAdapter { selectedBook: File -> displaySelectedBook(selectedBook) }
+            ThumbnailAdapter { selectedBook: Book -> displaySelectedBook(selectedBook) }
         thumbnailAdapter.setThumbnailList(listOf())
         thumbnailRecyclerView.adapter = thumbnailAdapter
     }
@@ -80,6 +88,25 @@ class LibraryFragment : Fragment() {
             Intent.createChooser(intent, "Select app to choose folder"),
             PICK_MAIN_FOLDER
         )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS ->
+                    setThumbnailFileList(selectedFolder)
+            }
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.external_storage_reading_permission_not_granted),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -102,7 +129,8 @@ class LibraryFragment : Fragment() {
                 PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS
             )
         } else {
-            if (!model.setThumbnails(mainFolder)) {
+            // setThumbnails() returns false if folder is null or empty
+            if (!model.setLibrary(mainFolder)) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.selected_folder_is_null_or_empty),
@@ -112,27 +140,15 @@ class LibraryFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            when (requestCode) {
-                PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS ->
-                    setThumbnailFileList(selectedFolder)
-            }
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.external_storage_reading_permission_not_granted),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
 
-    private fun displaySelectedBook(_selectedBook: File) {
+    private fun displaySelectedBook(_selectedBook: Book) {
         model.setBookFolder(_selectedBook)
         findNavController().navigate(R.id.action_allFoldersFragment_to_oneFolderFragment)
+    }
+
+    private fun setScreenWidth() {
+        val rect = Rect()
+        libraryFragmentBinding.root.getWindowVisibleDisplayFrame(rect)
+        Util.screenWidth = rect.width()
     }
 }
