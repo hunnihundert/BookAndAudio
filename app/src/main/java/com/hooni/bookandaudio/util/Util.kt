@@ -30,10 +30,11 @@ class Util {
 
             if (height > reqHeight || width > reqWidth) {
                 // if no value is entered for reqHeight or reqWidth, it will be set to 0
-                // meaning the respective dimension is irrelevant and therefore setting
-                // the respective dimension check for the while loop will always be false
-                val halfWidth = if (reqWidth == 0) -1 else width / 2
-                val halfHeight = if (reqHeight == 0) -1 else height / 2
+                // meaning the respective dimension is irrelevant
+                // to make the respective condition of the value loop always false, the value
+                // will be set to -100 (-1 may make the value to >0 due to int rounding)
+                val halfWidth = if (reqWidth == 0) -100 else width / 2
+                val halfHeight = if (reqHeight == 0) -100 else height / 2
 
                 while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
                     inSampleSize += 1
