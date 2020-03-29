@@ -28,34 +28,21 @@ class Util {
             val (width, height) = options.run { outWidth to outHeight }
             var inSampleSize = 1
 
-            // if no value is entered for reqHeight or reqWidth, it will be set to 0
-            // meaning the corresponding dimension is irrelevant
-            if (reqHeight != 0 && reqWidth != 0) {
-                if (height > reqHeight || width > reqWidth) {
-                    val halfWidth = width / 2
-                    val halfHeight = height / 2
+            if (height > reqHeight || width > reqWidth) {
+                // if no value is entered for reqHeight or reqWidth, it will be set to 0
+                // meaning the respective dimension is irrelevant and therefore setting
+                // the respective dimension check for the while loop will always be false
+                val halfWidth = if (reqWidth == 0) -1 else width / 2
+                val halfHeight = if (reqHeight == 0) -1 else height / 2
 
+                if (reqHeight != 0 && reqWidth != 0) {
                     while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
                         inSampleSize += 1
                     }
                 }
-            } else if (reqHeight == 0) {
-                if (width > reqWidth) {
-                    val halfWidth = width / 2
-
-                    while (halfWidth / inSampleSize >= reqWidth) {
-                        inSampleSize += 1
-                    }
-                }
-            } else {
-                if (height > reqHeight) {
-                    val halfHeight = height / 2
-
-                    while (halfHeight / inSampleSize >= reqHeight) {
-                        inSampleSize += 1
-                    }
-                }
             }
+
+
 
             return inSampleSize
         }
