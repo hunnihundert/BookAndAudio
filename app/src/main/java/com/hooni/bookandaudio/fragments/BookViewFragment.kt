@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.BookViewerAdapter
+import com.hooni.bookandaudio.data.Book
 import com.hooni.bookandaudio.databinding.FragmentBookViewerBinding
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
 import java.io.File
@@ -54,10 +55,10 @@ class BookViewFragment : Fragment() {
         viewPager.adapter = viewPagerAdapter
     }
 
-    private fun getImageList(selectedBookFile: File): List<Pair<File?, File?>> {
+    private fun getImageList(selectedBook: Book): List<Pair<File?, File?>> {
         var resultList = listOf<Pair<File?, File?>>()
 
-        selectedBookFile.listFiles()?.let {
+        selectedBook.imageDirectory.listFiles()?.let {
             it.toMutableList<File?>().apply {
                 add(1, null)
                 if (0 == size % 2)

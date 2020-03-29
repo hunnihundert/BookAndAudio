@@ -22,10 +22,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.ThumbnailAdapter
+import com.hooni.bookandaudio.data.Book
 import com.hooni.bookandaudio.databinding.FragmentLibraryViewerBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
-import java.io.File
 
 class LibraryFragment : Fragment() {
 
@@ -53,7 +53,7 @@ class LibraryFragment : Fragment() {
         val view = libraryFragmentBinding.root
         initRecyclerView(view)
         setScreenWidth()
-        model.thumbnails.observe(viewLifecycleOwner, Observer {
+        model.library.observe(viewLifecycleOwner, Observer {
             thumbnailAdapter.setThumbnailList(it)
             thumbnailAdapter.notifyDataSetChanged()
         })
@@ -74,7 +74,7 @@ class LibraryFragment : Fragment() {
             GridLayoutManager(requireContext(), BOOKS_PER_LINE, LinearLayoutManager.VERTICAL, false)
         thumbnailRecyclerView.layoutManager = gridlayoutManager
         thumbnailAdapter =
-            ThumbnailAdapter { selectedBook: File -> displaySelectedBook(selectedBook) }
+            ThumbnailAdapter { selectedBook: Book -> displaySelectedBook(selectedBook) }
         thumbnailAdapter.setThumbnailList(listOf())
         thumbnailRecyclerView.adapter = thumbnailAdapter
     }
@@ -130,7 +130,7 @@ class LibraryFragment : Fragment() {
             )
         } else {
             // setThumbnails() returns false if folder is null or empty
-            if (!model.setThumbnails(mainFolder)) {
+            if (!model.setLibrary(mainFolder)) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.selected_folder_is_null_or_empty),
@@ -141,7 +141,7 @@ class LibraryFragment : Fragment() {
     }
 
 
-    private fun displaySelectedBook(_selectedBook: File) {
+    private fun displaySelectedBook(_selectedBook: Book) {
         model.setBookFolder(_selectedBook)
         findNavController().navigate(R.id.action_allFoldersFragment_to_oneFolderFragment)
     }

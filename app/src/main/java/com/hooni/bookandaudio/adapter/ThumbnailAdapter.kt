@@ -3,13 +3,13 @@ package com.hooni.bookandaudio.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.hooni.bookandaudio.data.Book
 import com.hooni.bookandaudio.databinding.LibraryListItemBinding
 import com.hooni.bookandaudio.util.Util
-import java.io.File
 
-class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
+class ThumbnailAdapter(private val clickListener: (Book) -> Unit) :
     RecyclerView.Adapter<ThumbnailAdapter.CustomViewHolder>() {
-    private var thumbnailList = listOf<Pair<String, File>>()
+    private var thumbnailList = listOf<Book>()
     private lateinit var binding: LibraryListItemBinding
 
     companion object {
@@ -24,12 +24,14 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
 
 
         fun bind(
-            item: Pair<String, File>,
-            clickListener: (File) -> Unit
+            item: Book,
+            clickListener: (Book) -> Unit
         ) {
-            val titleToSet = item.first
+            val titleToSet = item.title
+            val coverImageToSet = item.imageDirectory.listFiles()!![0]
+
             val resizedBitmapToSet = Util.decodeSampledBitmapFromFile(
-                item.second,
+                coverImageToSet,
                 REQUIRED_THUMBNAIL_WIDTH,
                 REQUIRED_THUMBNAIL_HEIGHT
             )
@@ -37,10 +39,11 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
             title.text = titleToSet
 
             itemView.setOnClickListener {
-                val directoryWithImagesOfBook = item.second.parentFile
-                directoryWithImagesOfBook?.let {
-                    clickListener(directoryWithImagesOfBook)
-                }
+//                val directoryWithImagesOfBook = (item.imageDirectory as File).parentFile
+//                directoryWithImagesOfBook?.let {
+//                    clickListener(item)
+//                }
+                clickListener(item)
             }
         }
     }
@@ -59,9 +62,9 @@ class ThumbnailAdapter(private val clickListener: (File) -> Unit) :
         holder.bind(thumbnailList[position], clickListener)
     }
 
-    internal fun setThumbnailList(thumbnailListToSet: List<Pair<String, File>>) {
+    internal fun setThumbnailList(thumbnailListToSet: List<Book>) {
         thumbnailList = thumbnailListToSet.sortedBy {
-            it.first
+            it.title
         }
     }
 }
