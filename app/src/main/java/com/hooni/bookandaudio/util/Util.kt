@@ -35,15 +35,10 @@ class Util {
                 val halfWidth = if (reqWidth == 0) -1 else width / 2
                 val halfHeight = if (reqHeight == 0) -1 else height / 2
 
-                if (reqHeight != 0 && reqWidth != 0) {
-                    while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
-                        inSampleSize += 1
-                    }
+                while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
+                    inSampleSize += 1
                 }
             }
-
-
-
             return inSampleSize
         }
 
