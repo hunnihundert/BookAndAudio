@@ -8,11 +8,11 @@ import com.hooni.bookandaudio.util.Util
 import java.io.File
 
 class SharedViewModel : ViewModel() {
-    val selectedBookFile = MutableLiveData<Book>()
     val library = MutableLiveData<List<Book>>()
+    val bookPages = MutableLiveData<List<Pair<File?, File?>>>()
 
-    internal fun setBookFolder(selectedBook: Book) {
-        selectedBookFile.value = selectedBook
+    internal fun setBookFolder(_selectedBook: Book) {
+        setBookPages(_selectedBook)
     }
 
     internal fun setLibrary(uriOfMainFolder: Uri): Boolean {
@@ -37,6 +37,27 @@ class SharedViewModel : ViewModel() {
             library.value = tempList
         }
         return isValidDirectory
+    }
+
+    private fun setBookPages(selectedBook: Book) {
+        var resultList = listOf<Pair<File?, File?>>()
+
+        // creating Pairs of Images that belong together
+        // images are added to a list and then added to pairs
+        // - on index 1 and index n 'null' will be added, so first and last image have 'null' as a pair
+        // - if there is an uneven amount of pages, the last page will get 'null' as a partner
+        // - every second pair will be removed as zip with next means (1,2),(2,3),(3,4), etc.
+
+        selectedBook.imageDirectory.listFiles()?.let {
+            it.toMutableList<File?>().apply {
+                add(1, null)
+                if (0 == size % 2)
+                    add(size - 1, null)
+                add(null)
+            }.zipWithNext().run { slice(indices step 2) }
+        }?.let { resultList = it }
+
+        bookPages.value = resultList
     }
 
 
