@@ -10,10 +10,8 @@ import java.io.File
 class SharedViewModel : ViewModel() {
     val library = MutableLiveData<List<Book>>()
     val bookPages = MutableLiveData<List<Pair<File?, File?>>>()
-
-    internal fun setBookFolder(_selectedBook: Book) {
-        setBookPages(_selectedBook)
-    }
+    private val mediaPaths = MutableLiveData<List<String>>()
+    private val selectedBook = MutableLiveData<Book>()
 
     internal fun setLibrary(uriOfMainFolder: Uri): Boolean {
         var isValidDirectory = false
@@ -59,6 +57,24 @@ class SharedViewModel : ViewModel() {
 
         bookPages.value = resultList
     }
+
+
+    private fun setMediaPaths() {
+        val resultList = mutableListOf<String>()
+        for (file in selectedBook.value!!.mediaDirectory.listFiles()!!) {
+            resultList.add(file.path)
+        }
+        mediaPaths.value = resultList
+    }
+
+    internal fun getMediaPaths() = mediaPaths.value
+
+    internal fun setBookFolder(_selectedBook: Book) {
+        selectedBook.value = _selectedBook
+        setMediaPaths()
+        setBookPages(_selectedBook)
+    }
+
 
 
 }

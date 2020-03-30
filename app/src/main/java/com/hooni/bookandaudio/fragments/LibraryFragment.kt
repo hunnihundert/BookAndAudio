@@ -53,14 +53,19 @@ class LibraryFragment : Fragment() {
         val view = libraryFragmentBinding.root
         initRecyclerView(view)
         setScreenWidth()
-        model.library.observe(viewLifecycleOwner, Observer {
-            thumbnailAdapter.setThumbnailList(it)
-            thumbnailAdapter.notifyDataSetChanged()
-        })
         libraryFragmentBinding.allFolderPicker.setOnClickListener {
             pickFolder()
         }
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        model.library.observe(viewLifecycleOwner, Observer {
+            thumbnailAdapter.setThumbnailList(it)
+            thumbnailAdapter.notifyDataSetChanged()
+        })
+
     }
 
     override fun onDestroyView() {
