@@ -6,4 +6,8 @@
     <string name="selected_folder_does_not_contain_images">Folder does not contain any images. Please select correct Folder.</string>
     <string name="viewpager_list_item_image_view_content_description">Main Image</string>
     <string name="book_page">Book Page</string>
+    <string name="play_pause_track">Play/Pause Track</string>
+    <string name="next_track">Next Track</string>
+    <string name="volume_down_icon">Volume Down Icon</string>
+    <string name="volume_up_icon">Volume Up Icon</string>
 </resources>

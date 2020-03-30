@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:baselineAligned="false"
         android:id="@+id/media_player_controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,6 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:background="#00000000"
+                android:contentDescription="@string/next_track"
                 tools:src="@android:drawable/ic_media_previous" />
 
             <ImageButton
@@ -73,6 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:background="#00000000"
+                android:contentDescription="@string/play_pause_track"
                 tools:src="@android:drawable/ic_media_play" />
 
             <ImageButton
@@ -81,6 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:background="#00000000"
+                android:contentDescription="@string/next_track"
                 tools:src="@android:drawable/ic_media_next" />
 
         </LinearLayout>
@@ -95,6 +99,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/volume_down_icon"
                 android:src="@drawable/ic_volume_down_black_24dp" />
 
             <androidx.appcompat.widget.AppCompatSeekBar
@@ -107,6 +112,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/volume_up_icon"
                 android:src="@drawable/ic_volume_up_black_24dp" />
 
         </LinearLayout>

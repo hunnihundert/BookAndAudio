@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -20,7 +21,8 @@ class BookViewFragment : Fragment() {
 
     private lateinit var mp: MediaPlayer
     private var totalTime = 0
-    private lateinit var currentTotalTracks: Pair<Int, Int>
+    private var currentTrack = 0
+    private var currentTotalTracks = 0
 
     private lateinit var viewPager: ViewPager2
     private lateinit var viewPagerAdapter: BookViewerAdapter
@@ -53,6 +55,8 @@ class BookViewFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        mp.stop()
+        mp.release()
     }
 
     private fun initRecyclerView() {
@@ -80,22 +84,29 @@ class BookViewFragment : Fragment() {
             }
         }
         bookViewFragmentBinding.previousTrack.setOnClickListener {
-            // check current track number
-            // compare with track list
-            // switch, if possible
+            if (currentTrack > 0) {
+                currentTrack -= 1
+                playTrack(currentTrack)
+                Toast.makeText(requireContext(), "Track: ${currentTrack + 1}", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
         bookViewFragmentBinding.nextTrack.setOnClickListener {
-            // check current track number
-            // compare with track list
-            // switch, if possible
+            if (currentTrack < currentTotalTracks - 1) {
+                currentTrack += 1
+                playTrack(currentTrack)
+                Toast.makeText(requireContext(), "Track: ${currentTrack + 1}", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
 
     private fun initMediaPlayer() {
         mp = MediaPlayer()
-        currentTotalTracks = Pair(0, model.getMediaPaths()?.size ?: 0)
+        currentTrack = 0
+        currentTotalTracks = model.getMediaPaths()?.size ?: 0
         mp.run {
-            setDataSource(model.getMediaPaths()?.get(currentTotalTracks.first))
+            setDataSource(model.getMediaPaths()?.get(currentTrack))
             setVolume(0.5f, 0.5f)
             prepare()
         }
@@ -148,5 +159,16 @@ class BookViewFragment : Fragment() {
                 }
             }
         )
+    }
+
+    private fun playTrack(trackToPlay: Int) {
+        mp.stop()
+        mp.release()
+        mp = MediaPlayer()
+        mp.setDataSource(model.getMediaPaths()?.get(trackToPlay))
+        mp.prepare()
+        totalTime = mp.duration
+        initPositionBar()
+        mp.start()
     }
 }

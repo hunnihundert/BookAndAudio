@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.hooni.bookandaudio.data.Book
 import com.hooni.bookandaudio.util.Util
 import java.io.File
+import java.util.*
 
 class SharedViewModel : ViewModel() {
     val library = MutableLiveData<List<Book>>()
@@ -62,7 +63,10 @@ class SharedViewModel : ViewModel() {
     private fun setMediaPaths() {
         val resultList = mutableListOf<String>()
         for (file in selectedBook.value!!.mediaDirectory.listFiles()!!) {
-            resultList.add(file.path)
+            if (file.extension.toLowerCase(Locale.getDefault()) == "mp3" || file.extension.toLowerCase(
+                    Locale.getDefault()
+                ) == "wma"
+            ) resultList.add(file.path)
         }
         mediaPaths.value = resultList
     }
