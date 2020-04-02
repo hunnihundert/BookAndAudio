@@ -162,13 +162,17 @@ class BookViewFragment : Fragment() {
     }
 
     private fun playTrack(trackToPlay: Int) {
-        mp.stop()
-        mp.release()
+        mp.run {
+            stop()
+            release()
+        }
         mp = MediaPlayer()
-        mp.setDataSource(model.getMediaPaths()?.get(trackToPlay))
-        mp.prepare()
-        totalTime = mp.duration
-        initPositionBar()
-        mp.start()
+        mp.run {
+            setDataSource(model.getMediaPaths()?.get(trackToPlay))
+            prepare()
+            totalTime = duration
+            initPositionBar()
+            start()
+        }
     }
 }
