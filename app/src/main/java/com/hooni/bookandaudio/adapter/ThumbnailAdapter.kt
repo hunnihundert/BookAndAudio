@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.data.Book
 import com.hooni.bookandaudio.databinding.LibraryListItemBinding
 import com.hooni.bookandaudio.util.Util
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ThumbnailAdapter(private val clickListener: (Book) -> Unit) :
     RecyclerView.Adapter<ThumbnailAdapter.CustomViewHolder>() {
@@ -23,12 +26,13 @@ class ThumbnailAdapter(private val clickListener: (Book) -> Unit) :
         private val title = binding.title
 
 
-        fun bind(
+        suspend fun bind(
             item: Book,
             clickListener: (Book) -> Unit
         ) {
             val titleToSet = item.title
             val coverImageToSet = item.imageDirectory.listFiles()!![0]
+
 
             val resizedBitmapToSet = Util.decodeSampledBitmapFromFile(
                 coverImageToSet,
@@ -59,7 +63,10 @@ class ThumbnailAdapter(private val clickListener: (Book) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.bind(thumbnailList[position], clickListener)
+        val scope = CoroutineScope(Dispatchers.Main)
+        scope.launch {
+            holder.bind(thumbnailList[position], clickListener)
+        }
     }
 
     internal fun setThumbnailList(thumbnailListToSet: List<Book>) {
