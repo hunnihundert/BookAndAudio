@@ -32,7 +32,9 @@ class SharedViewModel : ViewModel() {
                 val bookTitle = book.name.substringAfterLast("/")
                 val bookImages = findDirectory(book, Util.PAGES_DIRECTORY)
                 val bookMedia = findDirectory(book, Util.MEDIA_DIRECTORY)
-                if (bookImages == null || bookMedia == null) continue
+
+                //
+                if (bookImages == null) continue
                 bookData = Book(bookTitle, bookImages, bookMedia)
                 tempList.add(bookData)
             }
@@ -89,7 +91,11 @@ class SharedViewModel : ViewModel() {
 
     private fun setMediaPaths() {
         val resultList = mutableListOf<String>()
-        for (file in selectedBook.value!!.mediaDirectory.listFiles()!!) {
+        if (selectedBook.value!!.mediaDirectory == null) {
+            mediaPaths.value = null
+            return
+        }
+        for (file in selectedBook.value!!.mediaDirectory!!.listFiles()!!) {
             if (file.extension.toLowerCase(Locale.getDefault()) == "mp3" || file.extension.toLowerCase(
                     Locale.getDefault()
                 ) == "wma"

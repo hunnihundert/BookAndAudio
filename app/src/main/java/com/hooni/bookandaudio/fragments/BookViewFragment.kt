@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
+import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.BookViewerAdapter
 import com.hooni.bookandaudio.databinding.FragmentBookViewerBinding
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
@@ -18,6 +19,7 @@ import com.hooni.bookandaudio.viewmodel.SharedViewModel
 class BookViewFragment : Fragment() {
     private var _binding: FragmentBookViewerBinding? = null
     private val bookViewFragmentBinding get() = _binding!!
+    private var hasAudio = true
 
     private lateinit var mp: MediaPlayer
     private var totalTime = 0
@@ -75,38 +77,74 @@ class BookViewFragment : Fragment() {
         // onClickListeners
         bookViewFragmentBinding.playPauseMedia.setOnClickListener {
             // check if playing/pause
-            if (mp.isPlaying) {
-                mp.pause()
-                bookViewFragmentBinding.playPauseMedia.setBackgroundResource(android.R.drawable.ic_media_play)
+            if (hasAudio) {
+                if (mp.isPlaying) {
+                    mp.pause()
+                    bookViewFragmentBinding.playPauseMedia.setBackgroundResource(android.R.drawable.ic_media_play)
+                } else {
+                    mp.start()
+                    bookViewFragmentBinding.playPauseMedia.setBackgroundResource(android.R.drawable.ic_media_pause)
+                }
             } else {
-                mp.start()
-                bookViewFragmentBinding.playPauseMedia.setBackgroundResource(android.R.drawable.ic_media_pause)
+                hasNoAudioNoti()
             }
+
         }
         bookViewFragmentBinding.previousTrack.setOnClickListener {
-            if (currentTrack > 0) {
-                currentTrack -= 1
-                playTrack(currentTrack)
-                Toast.makeText(requireContext(), "Track: ${currentTrack + 1}", Toast.LENGTH_SHORT)
-                    .show()
+            if (hasAudio) {
+                if (currentTrack > 0) {
+                    currentTrack -= 1
+                    playTrack(currentTrack)
+                    Toast.makeText(
+                        requireContext(),
+                        "Track: ${currentTrack + 1}",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            } else {
+                hasNoAudioNoti()
             }
+
         }
         bookViewFragmentBinding.nextTrack.setOnClickListener {
-            if (currentTrack < currentTotalTracks - 1) {
-                currentTrack += 1
-                playTrack(currentTrack)
-                Toast.makeText(requireContext(), "Track: ${currentTrack + 1}", Toast.LENGTH_SHORT)
-                    .show()
+            if (hasAudio) {
+                if (currentTrack < currentTotalTracks - 1) {
+                    currentTrack += 1
+                    playTrack(currentTrack)
+                    Toast.makeText(
+                        requireContext(),
+                        "Track: ${currentTrack + 1}",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            } else {
+                hasNoAudioNoti()
             }
         }
     }
 
+    private fun hasNoAudioNoti() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.does_not_have_audio),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
     private fun initMediaPlayer() {
         mp = MediaPlayer()
-        currentTrack = 0
-        currentTotalTracks = model.getMediaPaths()?.size ?: 0
+        if (model.getMediaPaths().isNullOrEmpty()) {
+            hasAudio = false
+            return
+        } else {
+            hasAudio = true
+        }
+        currentTotalTracks = model.getMediaPaths()!!.size
+
         mp.run {
-            setDataSource(model.getMediaPaths()?.get(currentTrack))
+            setDataSource(model.getMediaPaths()!![currentTrack])
             setVolume(0.5f, 0.5f)
             prepare()
         }
@@ -168,7 +206,7 @@ class BookViewFragment : Fragment() {
         }
         mp = MediaPlayer()
         mp.run {
-            setDataSource(model.getMediaPaths()?.get(trackToPlay))
+            setDataSource(model.getMediaPaths()!![trackToPlay])
             prepare()
             totalTime = duration
             initPositionBar()
