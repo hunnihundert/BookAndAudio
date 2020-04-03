@@ -10,4 +10,6 @@
     <string name="next_track">Next Track</string>
     <string name="volume_down_icon">Volume Down Icon</string>
     <string name="volume_up_icon">Volume Up Icon</string>
+    <string name="previous_track">Previous Track</string>
+    <string name="does_not_have_audio">This book doesn\'t have an audio track</string>
 </resources>

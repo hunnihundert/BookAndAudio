@@ -9,10 +9,12 @@ import java.io.File
 import java.util.*
 
 class SharedViewModel : ViewModel() {
+
     val library = MutableLiveData<List<Book>>()
     val bookPages = MutableLiveData<List<Pair<File?, File?>>>()
     private val mediaPaths = MutableLiveData<List<String>>()
     private val selectedBook = MutableLiveData<Book>()
+
 
     internal fun setLibrary(uriOfMainFolder: Uri): Boolean {
         var isValidDirectory = false
@@ -28,14 +30,41 @@ class SharedViewModel : ViewModel() {
             val tempList = mutableListOf<Book>()
             for (book in subDirectoriesLevel) {
                 val bookTitle = book.name.substringAfterLast("/")
-                val bookImages = book.listFiles()!![1]
-                val bookMedia = book.listFiles()!![0]
+                val bookImages = findDirectory(book, Util.PAGES_DIRECTORY)
+                val bookMedia = findDirectory(book, Util.MEDIA_DIRECTORY)
+
+                //
+                if (bookImages == null) continue
                 bookData = Book(bookTitle, bookImages, bookMedia)
                 tempList.add(bookData)
             }
             library.value = tempList
         }
         return isValidDirectory
+    }
+
+    private fun findDirectory(directory: File?, nameOfDirectory: String): File? {
+        return when {
+            directory == null -> {
+                null
+            }
+            directory.name.substringAfterLast("/") == nameOfDirectory -> {
+                directory
+            }
+            else -> {
+                var result: File? = null
+                if (directory.listFiles() != null) {
+                    val subDirectories = directory.listFiles()!!.filter {
+                        it.isDirectory
+                    }
+                    for (subSubDirectory in subDirectories) {
+                        result = findDirectory(subSubDirectory, nameOfDirectory)
+                        if (result != null) return result
+                    }
+                }
+                result
+            }
+        }
     }
 
     private fun setBookPages(selectedBook: Book) {
@@ -62,7 +91,11 @@ class SharedViewModel : ViewModel() {
 
     private fun setMediaPaths() {
         val resultList = mutableListOf<String>()
-        for (file in selectedBook.value!!.mediaDirectory.listFiles()!!) {
+        if (selectedBook.value!!.mediaDirectory == null) {
+            mediaPaths.value = null
+            return
+        }
+        for (file in selectedBook.value!!.mediaDirectory!!.listFiles()!!) {
             if (file.extension.toLowerCase(Locale.getDefault()) == "mp3" || file.extension.toLowerCase(
                     Locale.getDefault()
                 ) == "wma"
@@ -78,7 +111,6 @@ class SharedViewModel : ViewModel() {
         setMediaPaths()
         setBookPages(_selectedBook)
     }
-
 
 
 }
