@@ -2,6 +2,7 @@ package com.hooni.bookandaudio.fragments
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.provider.DocumentsContract
 import android.view.*
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -45,6 +47,10 @@ class LibraryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE) ?: return
+        val defaultValue = ""
+        val preSelectedFolder = sharedPref.getString("uri", defaultValue)
+        if (preSelectedFolder != "") setThumbnailFileList(preSelectedFolder!!.toUri())
     }
 
     override fun onCreateView(
@@ -136,6 +142,13 @@ class LibraryFragment : Fragment() {
             )
         } else {
             // setThumbnails() returns false if folder is null or empty
+            val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE) ?: return
+            with(sharedPref.edit()) {
+                val uriString = mainFolder.toString()
+                //string.toUri()
+                putString("uri", uriString)
+                commit()
+            }
             if (!model.setLibrary(mainFolder)) {
                 Toast.makeText(
                     requireContext(),
