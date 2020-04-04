@@ -12,4 +12,9 @@
     <string name="volume_up_icon">Volume Up Icon</string>
     <string name="previous_track">Previous Track</string>
     <string name="does_not_have_audio">This book doesn\'t have an audio track</string>
+    <string name="menu_switch_pages">Switch Pages</string>
+    <string name="menu_change_grid">Change Grid</string>
+    <string name="menu_full_screen">Full Screen</string>
+    <string name="menu_set_library_folder">Set Library Folder</string>
+    <string name="menu_subdirectory_settings">Subdirectory Settings</string>
 </resources>

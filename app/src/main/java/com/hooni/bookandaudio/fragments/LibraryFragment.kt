@@ -8,9 +8,7 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
@@ -44,18 +42,21 @@ class LibraryFragment : Fragment() {
     private lateinit var thumbnailRecyclerView: RecyclerView
     private lateinit var selectedFolder: Uri
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         _binding = FragmentLibraryViewerBinding.inflate(layoutInflater)
         val view = libraryFragmentBinding.root
         initRecyclerView(view)
         setScreenWidth()
-        libraryFragmentBinding.allFolderPicker.setOnClickListener {
-            pickFolder()
-        }
         return view
     }
 
@@ -155,5 +156,33 @@ class LibraryFragment : Fragment() {
         val rect = Rect()
         libraryFragmentBinding.root.getWindowVisibleDisplayFrame(rect)
         Util.screenWidth = rect.width()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.switch_pages -> {
+                true
+            }
+            R.id.change_grid -> {
+                true
+            }
+            R.id.full_screen -> {
+                true
+            }
+            R.id.library_folder -> {
+                pickFolder()
+                true
+            }
+            R.id.subdirectory_settings -> {
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 }
