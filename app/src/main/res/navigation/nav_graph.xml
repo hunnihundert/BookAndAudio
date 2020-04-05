@@ -3,24 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/allFoldersFragment">
+    app:startDestination="@id/libraryFragment">
 
     <fragment
-        android:id="@+id/oneFolderFragment"
+        android:id="@+id/bookViewerFragment"
         android:name="com.hooni.bookandaudio.fragments.BookViewFragment"
         android:label="OneFolderFragment"
         tools:layout="@layout/fragment_book_viewer">
         <action
-            android:id="@+id/action_oneFolderFragment_to_allFoldersFragment"
-            app:destination="@id/allFoldersFragment" />
+            android:id="@+id/action_bookViewerFragment_to_allFoldersFragment"
+            app:destination="@id/libraryFragment" />
+        <action
+            android:id="@+id/action_bookViewerFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
     </fragment>
     <fragment
-        android:id="@+id/allFoldersFragment"
+        android:id="@+id/libraryFragment"
         android:name="com.hooni.bookandaudio.fragments.LibraryFragment"
         android:label="AllFoldersFragment"
         tools:layout="@layout/fragment_library_viewer">
         <action
-            android:id="@+id/action_allFoldersFragment_to_oneFolderFragment"
-            app:destination="@id/oneFolderFragment" />
+            android:id="@+id/action_libraryFragment_to_bookViewerFragment"
+            app:destination="@id/bookViewerFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.hooni.bookandaudio.fragments.AboutFragment"
+        android:label="AboutFragment"
+        tools:layout="@layout/fragment_about">
+        <action
+            android:id="@+id/action_aboutFragment_to_bookViewerFragment"
+            app:destination="@id/bookViewerFragment" />
+        <action
+            android:id="@+id/action_aboutFragment_to_libraryFragment"
+            app:destination="@id/libraryFragment" />
     </fragment>
 </navigation>

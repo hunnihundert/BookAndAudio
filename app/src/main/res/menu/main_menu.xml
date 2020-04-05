@@ -15,4 +15,7 @@
     <item
         android:id="@+id/subdirectory_settings"
         android:title="@string/menu_subdirectory_settings" />
+    <item
+        android:id="@+id/about"
+        android:title="@string/about" />
 </menu>

@@ -162,7 +162,7 @@ class LibraryFragment : Fragment() {
 
     private fun displaySelectedBook(_selectedBook: Book) {
         model.setBookFolder(_selectedBook)
-        findNavController().navigate(R.id.action_allFoldersFragment_to_oneFolderFragment)
+        findNavController().navigate(R.id.action_libraryFragment_to_bookViewerFragment)
     }
 
     private fun setScreenWidth() {
@@ -175,11 +175,17 @@ class LibraryFragment : Fragment() {
         inflater.inflate(R.menu.main_menu, menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.switch_pages).isVisible = false
+        menu.findItem(R.id.change_grid).isVisible = true
+        menu.findItem(R.id.full_screen).isVisible = true
+        menu.findItem(R.id.library_folder).isVisible = true
+        menu.findItem(R.id.subdirectory_settings).isVisible = true
+        menu.findItem(R.id.about).isVisible = true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.switch_pages -> {
-                true
-            }
             R.id.change_grid -> {
                 true
             }
@@ -191,6 +197,10 @@ class LibraryFragment : Fragment() {
                 true
             }
             R.id.subdirectory_settings -> {
+                true
+            }
+            R.id.about -> {
+                findNavController().navigate(R.id.action_libraryFragment_to_aboutFragment)
                 true
             }
             else -> {
