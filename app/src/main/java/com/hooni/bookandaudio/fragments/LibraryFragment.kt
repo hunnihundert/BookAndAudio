@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.DocumentsContract
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
@@ -51,6 +52,11 @@ class LibraryFragment : Fragment() {
         val defaultValue = ""
         val preSelectedFolder = sharedPref.getString("uri", defaultValue)
         if (preSelectedFolder != "") setThumbnailFileList(preSelectedFolder!!.toUri())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     override fun onCreateView(

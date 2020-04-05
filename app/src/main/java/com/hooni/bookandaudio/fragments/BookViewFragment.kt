@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -39,6 +40,7 @@ class BookViewFragment : Fragment() {
         _binding = FragmentBookViewerBinding.inflate(layoutInflater)
         val view = bookViewFragmentBinding.root
         setHasOptionsMenu(true)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initRecyclerView()
         initButtons()
         initMediaPlayer()
@@ -229,6 +231,10 @@ class BookViewFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            android.R.id.home -> {
+                findNavController().navigate(R.id.action_bookViewerFragment_to_libraryFragment)
+                true
+            }
             R.id.switch_pages -> {
                 true
             }
