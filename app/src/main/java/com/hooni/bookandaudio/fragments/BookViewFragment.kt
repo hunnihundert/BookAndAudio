@@ -2,14 +2,14 @@ package com.hooni.bookandaudio.fragments
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.BookViewerAdapter
@@ -39,6 +39,8 @@ class BookViewFragment : Fragment() {
     ): View? {
         _binding = FragmentBookViewerBinding.inflate(layoutInflater)
         val view = bookViewFragmentBinding.root
+        setHasOptionsMenu(true)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initRecyclerView()
         initButtons()
         initMediaPlayer()
@@ -211,6 +213,41 @@ class BookViewFragment : Fragment() {
             totalTime = duration
             initPositionBar()
             start()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.switch_pages).isVisible = true
+        menu.findItem(R.id.change_grid).isVisible = false
+        menu.findItem(R.id.full_screen).isVisible = true
+        menu.findItem(R.id.library_folder).isVisible = false
+        menu.findItem(R.id.subdirectory_settings).isVisible = false
+        menu.findItem(R.id.about).isVisible = true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                findNavController().navigate(R.id.action_bookViewerFragment_to_libraryFragment)
+                true
+            }
+            R.id.switch_pages -> {
+                true
+            }
+            R.id.full_screen -> {
+                true
+            }
+            R.id.about -> {
+                findNavController().navigate(R.id.action_bookViewerFragment_to_aboutFragment)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 }

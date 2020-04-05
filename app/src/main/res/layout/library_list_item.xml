@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/book_page"
-            tools:srcCompat="@drawable/ic_launcher_background" />
+            tools:srcCompat="@mipmap/ic_audiobook_round" />
 
         <TextView
             android:id="@+id/title"

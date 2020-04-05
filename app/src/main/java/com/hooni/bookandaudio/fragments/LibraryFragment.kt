@@ -2,16 +2,17 @@ package com.hooni.bookandaudio.fragments
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -44,18 +45,30 @@ class LibraryFragment : Fragment() {
     private lateinit var thumbnailRecyclerView: RecyclerView
     private lateinit var selectedFolder: Uri
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE) ?: return
+        val defaultValue = ""
+        val preSelectedFolder = sharedPref.getString("uri", defaultValue)
+        if (preSelectedFolder != "") setThumbnailFileList(preSelectedFolder!!.toUri())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         _binding = FragmentLibraryViewerBinding.inflate(layoutInflater)
         val view = libraryFragmentBinding.root
         initRecyclerView(view)
         setScreenWidth()
-        libraryFragmentBinding.allFolderPicker.setOnClickListener {
-            pickFolder()
-        }
         return view
     }
 
@@ -135,6 +148,13 @@ class LibraryFragment : Fragment() {
             )
         } else {
             // setThumbnails() returns false if folder is null or empty
+            val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE) ?: return
+            with(sharedPref.edit()) {
+                val uriString = mainFolder.toString()
+                //string.toUri()
+                putString("uri", uriString)
+                commit()
+            }
             if (!model.setLibrary(mainFolder)) {
                 Toast.makeText(
                     requireContext(),
@@ -148,12 +168,50 @@ class LibraryFragment : Fragment() {
 
     private fun displaySelectedBook(_selectedBook: Book) {
         model.setBookFolder(_selectedBook)
-        findNavController().navigate(R.id.action_allFoldersFragment_to_oneFolderFragment)
+        findNavController().navigate(R.id.action_libraryFragment_to_bookViewerFragment)
     }
 
     private fun setScreenWidth() {
         val rect = Rect()
         libraryFragmentBinding.root.getWindowVisibleDisplayFrame(rect)
         Util.screenWidth = rect.width()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.switch_pages).isVisible = false
+        menu.findItem(R.id.change_grid).isVisible = true
+        menu.findItem(R.id.full_screen).isVisible = true
+        menu.findItem(R.id.library_folder).isVisible = true
+        menu.findItem(R.id.subdirectory_settings).isVisible = true
+        menu.findItem(R.id.about).isVisible = true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.change_grid -> {
+                true
+            }
+            R.id.full_screen -> {
+                true
+            }
+            R.id.library_folder -> {
+                pickFolder()
+                true
+            }
+            R.id.subdirectory_settings -> {
+                true
+            }
+            R.id.about -> {
+                findNavController().navigate(R.id.action_libraryFragment_to_aboutFragment)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 }

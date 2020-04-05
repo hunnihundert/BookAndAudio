@@ -3,6 +3,8 @@ package com.hooni.bookandaudio.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class Util {
@@ -46,18 +48,20 @@ class Util {
             return inSampleSize
         }
 
-        internal fun decodeSampledBitmapFromFile(
+        internal suspend fun decodeSampledBitmapFromFile(
             file: File,
             reqWidth: Int = 0,
             reqHeight: Int = 0
-        ): Bitmap {
-            return BitmapFactory.Options().run {
-                inJustDecodeBounds = true
-                BitmapFactory.decodeFile(file.path, this)
-                inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
-                inJustDecodeBounds = false
-                BitmapFactory.decodeFile(file.path, this)
+        ): Bitmap =
+            withContext(Dispatchers.IO) {
+                BitmapFactory.Options().run {
+                    inJustDecodeBounds = true
+                    BitmapFactory.decodeFile(file.path, this)
+                    inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+                    inJustDecodeBounds = false
+                    BitmapFactory.decodeFile(file.path, this)
+                }
             }
-        }
+
     }
 }

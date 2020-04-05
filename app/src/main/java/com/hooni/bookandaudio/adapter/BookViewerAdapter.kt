@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hooni.bookandaudio.databinding.BookPageListItemBinding
 import com.hooni.bookandaudio.util.Util
 import com.hooni.bookandaudio.util.Util.Companion.mergeImages
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 
@@ -18,7 +21,7 @@ class BookViewerAdapter : RecyclerView.Adapter<BookViewerAdapter.CustomViewHolde
         RecyclerView.ViewHolder(binding.root) {
         private val image = binding.mainImage
 
-        fun bind(item: Pair<File?, File?>) {
+        suspend fun bind(item: Pair<File?, File?>) {
             lateinit var bitmapToSet: Bitmap
             bitmapToSet = if (item.second == null) {
                 Util.decodeSampledBitmapFromFile(item.first!!, Util.screenWidth / 4)
@@ -45,7 +48,10 @@ class BookViewerAdapter : RecyclerView.Adapter<BookViewerAdapter.CustomViewHolde
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.bind(listOfImages[position])
+        val scope = CoroutineScope(Dispatchers.Main)
+        scope.launch {
+            holder.bind(listOfImages[position])
+        }
     }
 
     internal fun setImageList(listOfUris: List<Pair<File?, File?>>) {

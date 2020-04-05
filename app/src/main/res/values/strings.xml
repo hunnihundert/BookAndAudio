@@ -12,4 +12,14 @@
     <string name="volume_up_icon">Volume Up Icon</string>
     <string name="previous_track">Previous Track</string>
     <string name="does_not_have_audio">This book doesn\'t have an audio track</string>
+    <string name="menu_switch_pages">Switch Pages</string>
+    <string name="menu_change_grid">Change Grid</string>
+    <string name="menu_full_screen">Full Screen</string>
+    <string name="menu_set_library_folder">Set Library Folder</string>
+    <string name="menu_subdirectory_settings">Subdirectory Settings</string>
+    <string name="honeysoft_logo">HoneySoft Logo</string>
+    <string name="honeysoft_logo_text">HoneySoft\nby Hoon Jung</string>
+    <string name="book_and_audio_icon">Book and Audio Icon</string>
+    <string name="book_and_audio_icon_text">Icons made by wanicon\nfrom www.flaticon.com</string>
+    <string name="about">About…</string>
 </resources>
