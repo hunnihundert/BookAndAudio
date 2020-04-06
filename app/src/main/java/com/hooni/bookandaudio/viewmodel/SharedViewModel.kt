@@ -12,8 +12,9 @@ class SharedViewModel : ViewModel() {
 
     val library = MutableLiveData<List<Book>>()
     val bookPages = MutableLiveData<List<Pair<File?, File?>>>()
+    val arePagesSwitched = MutableLiveData<Boolean>()
     private val mediaPaths = MutableLiveData<List<String>>()
-    private val selectedBook = MutableLiveData<Book>()
+    val selectedBook = MutableLiveData<Book>()
 
 
     internal fun setLibrary(uriOfMainFolder: Uri): Boolean {
@@ -67,7 +68,7 @@ class SharedViewModel : ViewModel() {
         }
     }
 
-    private fun setBookPages(selectedBook: Book) {
+    internal fun setBookPages(selectedBook: Book) {
         var resultList = listOf<Pair<File?, File?>>()
 
         // creating Pairs of Images that belong together
@@ -79,6 +80,9 @@ class SharedViewModel : ViewModel() {
         selectedBook.imageDirectory.listFiles()?.let {
             it.toMutableList<File?>().apply {
                 add(1, null)
+                arePagesSwitched.value?.let { _arePagesSwitched ->
+                    if (_arePagesSwitched) add(3, null)
+                }
                 if (0 == size % 2)
                     add(size - 1, null)
                 add(null)
@@ -111,6 +115,12 @@ class SharedViewModel : ViewModel() {
         setMediaPaths()
         setBookPages(_selectedBook)
     }
+
+    internal fun setArePagesSwitched(_arePagesSwitched: Boolean) {
+        arePagesSwitched.value = _arePagesSwitched
+    }
+
+    internal fun getArePagesSwitched() = arePagesSwitched.value ?: false
 
 
 }

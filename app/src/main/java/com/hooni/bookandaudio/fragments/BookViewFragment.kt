@@ -39,8 +39,7 @@ class BookViewFragment : Fragment() {
     ): View? {
         _binding = FragmentBookViewerBinding.inflate(layoutInflater)
         val view = bookViewFragmentBinding.root
-        setHasOptionsMenu(true)
-        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        initSupportActionBarMenu()
         initRecyclerView()
         initButtons()
         initMediaPlayer()
@@ -53,6 +52,9 @@ class BookViewFragment : Fragment() {
             viewPagerAdapter.setImageList(it)
             viewPagerAdapter.notifyDataSetChanged()
         })
+        model.arePagesSwitched.observe(viewLifecycleOwner, Observer {
+            model.setBookPages(model.selectedBook.value!!)
+        })
     }
 
 
@@ -61,6 +63,11 @@ class BookViewFragment : Fragment() {
         _binding = null
         mp.stop()
         mp.release()
+    }
+
+    private fun initSupportActionBarMenu() {
+        setHasOptionsMenu(true)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun initRecyclerView() {
@@ -88,7 +95,7 @@ class BookViewFragment : Fragment() {
                     bookViewFragmentBinding.playPauseMedia.setBackgroundResource(android.R.drawable.ic_media_pause)
                 }
             } else {
-                hasNoAudioNoti()
+                hasNoAudioNotification()
             }
 
         }
@@ -105,7 +112,7 @@ class BookViewFragment : Fragment() {
                         .show()
                 }
             } else {
-                hasNoAudioNoti()
+                hasNoAudioNotification()
             }
 
         }
@@ -122,12 +129,12 @@ class BookViewFragment : Fragment() {
                         .show()
                 }
             } else {
-                hasNoAudioNoti()
+                hasNoAudioNotification()
             }
         }
     }
 
-    private fun hasNoAudioNoti() {
+    private fun hasNoAudioNotification() {
         Toast.makeText(
             requireContext(),
             getString(R.string.does_not_have_audio),
@@ -236,9 +243,11 @@ class BookViewFragment : Fragment() {
                 true
             }
             R.id.switch_pages -> {
+                model.setArePagesSwitched(!model.getArePagesSwitched())
                 true
             }
             R.id.full_screen -> {
+                setFullScreen()
                 true
             }
             R.id.about -> {
@@ -250,4 +259,12 @@ class BookViewFragment : Fragment() {
             }
         }
     }
+
+    private fun setFullScreen() {
+        (requireActivity() as AppCompatActivity).supportActionBar!!.hide()
+        bookViewFragmentBinding.root.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        bookViewFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+    }
+
 }

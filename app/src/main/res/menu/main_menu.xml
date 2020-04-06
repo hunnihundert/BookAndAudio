@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/full_screen"
+        android:icon="@drawable/ic_full_screen_white_24dp"
+        android:title="@string/menu_full_screen"
+        app:showAsAction="always" />
     <item
         android:id="@+id/switch_pages"
         android:title="@string/menu_switch_pages" />
     <item
         android:id="@+id/change_grid"
         android:title="@string/menu_change_grid" />
-    <item
-        android:id="@+id/full_screen"
-        android:title="@string/menu_full_screen" />
     <item
         android:id="@+id/library_folder"
         android:title="@string/menu_set_library_folder" />
