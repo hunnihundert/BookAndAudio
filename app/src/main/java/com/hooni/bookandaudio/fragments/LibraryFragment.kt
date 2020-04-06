@@ -196,6 +196,7 @@ class LibraryFragment : Fragment() {
                 true
             }
             R.id.full_screen -> {
+                setFullScreen()
                 true
             }
             R.id.library_folder -> {
@@ -213,5 +214,12 @@ class LibraryFragment : Fragment() {
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    private fun setFullScreen() {
+        (requireActivity() as AppCompatActivity).supportActionBar!!.hide()
+        libraryFragmentBinding.root.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        libraryFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
 }

@@ -247,6 +247,7 @@ class BookViewFragment : Fragment() {
                 true
             }
             R.id.full_screen -> {
+                setFullScreen()
                 true
             }
             R.id.about -> {
@@ -258,4 +259,12 @@ class BookViewFragment : Fragment() {
             }
         }
     }
+
+    private fun setFullScreen() {
+        (requireActivity() as AppCompatActivity).supportActionBar!!.hide()
+        bookViewFragmentBinding.root.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        bookViewFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+    }
+
 }

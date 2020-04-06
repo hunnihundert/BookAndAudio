@@ -62,6 +62,5 @@ class Util {
                     BitmapFactory.decodeFile(file.path, this)
                 }
             }
-
     }
 }
