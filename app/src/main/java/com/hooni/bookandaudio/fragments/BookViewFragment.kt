@@ -262,9 +262,10 @@ class BookViewFragment : Fragment() {
 
     private fun setFullScreen() {
         (requireActivity() as AppCompatActivity).supportActionBar!!.hide()
-        bookViewFragmentBinding.root.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        //bookViewFragmentBinding.root.systemUiVisibility =
+        //    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         bookViewFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        //bookViewFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }
 
 }

@@ -15,7 +15,11 @@ class SharedViewModel : ViewModel() {
     val arePagesSwitched = MutableLiveData<Boolean>()
     private val mediaPaths = MutableLiveData<List<String>>()
     val selectedBook = MutableLiveData<Book>()
+    val booksPerLine = MutableLiveData<Int>()
 
+    internal fun setBooksPerLine(_booksPerLine: Int) {
+        booksPerLine.value = _booksPerLine
+    }
 
     internal fun setLibrary(uriOfMainFolder: Uri): Boolean {
         var isValidDirectory = false
@@ -76,6 +80,9 @@ class SharedViewModel : ViewModel() {
         // - on index 1 and index n 'null' will be added, so first and last image have 'null' as a pair
         // - if there is an uneven amount of pages, the last page will get 'null' as a partner
         // - every second pair will be removed as zip with next means (1,2),(2,3),(3,4), etc.
+        // - arePagesSwitched: as 2 pages are shown at the same time to get the "book-feeling"
+        //   some times the wrong pages are attached to each other, to counter that, the second page
+        //   also gets 'null' as a pair to switch that
 
         selectedBook.imageDirectory.listFiles()?.let {
             it.toMutableList<File?>().apply {
