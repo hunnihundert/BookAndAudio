@@ -36,7 +36,6 @@ class LibraryFragment : Fragment() {
     companion object {
         private const val PICK_MAIN_FOLDER = 0
         private const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE_ALL_FOLDERS = 0
-        private const val BOOKS_PER_LINE = 4
     }
 
     private val model: SharedViewModel by activityViewModels()
@@ -44,6 +43,7 @@ class LibraryFragment : Fragment() {
     private lateinit var thumbnailAdapter: ThumbnailAdapter
     private lateinit var thumbnailRecyclerView: RecyclerView
     private lateinit var selectedFolder: Uri
+    private var booksPerLine = 4
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +67,7 @@ class LibraryFragment : Fragment() {
 
         _binding = FragmentLibraryViewerBinding.inflate(layoutInflater)
         val view = libraryFragmentBinding.root
-        initRecyclerView(view)
+        initRecyclerView()
         setScreenWidth()
         return view
     }
@@ -86,11 +86,9 @@ class LibraryFragment : Fragment() {
         _binding = null
     }
 
-    private fun initRecyclerView(view: View) {
-        thumbnailRecyclerView = view.findViewById(R.id.thumbnail_recycler_view)
-        gridlayoutManager =
-            GridLayoutManager(requireContext(), BOOKS_PER_LINE, LinearLayoutManager.VERTICAL, false)
-        thumbnailRecyclerView.layoutManager = gridlayoutManager
+    private fun initRecyclerView() {
+        thumbnailRecyclerView = libraryFragmentBinding.thumbnailRecyclerView
+        switchNoOfBooksPerLine()
         thumbnailAdapter =
             ThumbnailAdapter { selectedBook: Book -> displaySelectedBook(selectedBook) }
         thumbnailAdapter.setThumbnailList(listOf())
@@ -193,6 +191,11 @@ class LibraryFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.change_grid -> {
+                when (booksPerLine) {
+                    4 -> booksPerLine = 6
+                    6 -> booksPerLine = 4
+                }
+                switchNoOfBooksPerLine()
                 true
             }
             R.id.full_screen -> {
@@ -214,6 +217,12 @@ class LibraryFragment : Fragment() {
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    private fun switchNoOfBooksPerLine() {
+        gridlayoutManager =
+            GridLayoutManager(requireContext(), booksPerLine, LinearLayoutManager.VERTICAL, false)
+        thumbnailRecyclerView.layoutManager = gridlayoutManager
     }
 
     private fun setFullScreen() {
