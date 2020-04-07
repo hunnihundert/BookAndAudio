@@ -64,7 +64,6 @@ class LibraryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = FragmentLibraryViewerBinding.inflate(layoutInflater)
         val view = libraryFragmentBinding.root
         initRecyclerView()
@@ -78,7 +77,10 @@ class LibraryFragment : Fragment() {
             thumbnailAdapter.setThumbnailList(it)
             thumbnailAdapter.notifyDataSetChanged()
         })
-
+        model.booksPerLine.observe(viewLifecycleOwner, Observer {
+            booksPerLine = it
+            switchNoOfBooksPerLine()
+        })
     }
 
     override fun onDestroyView() {
@@ -192,10 +194,9 @@ class LibraryFragment : Fragment() {
         return when (item.itemId) {
             R.id.change_grid -> {
                 when (booksPerLine) {
-                    4 -> booksPerLine = 6
-                    6 -> booksPerLine = 4
+                    4 -> model.setBooksPerLine(6)
+                    6 -> model.setBooksPerLine(4)
                 }
-                switchNoOfBooksPerLine()
                 true
             }
             R.id.full_screen -> {
