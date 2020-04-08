@@ -22,4 +22,5 @@
     <string name="book_and_audio_icon">Book and Audio Icon</string>
     <string name="book_and_audio_icon_text">Icons made by Smashicons\nfrom www.flaticon.com</string>
     <string name="about">About…</string>
+    <string name="time_left">-%1$s</string>
 </resources>

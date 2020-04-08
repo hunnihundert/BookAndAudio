@@ -1,7 +1,10 @@
 package com.hooni.bookandaudio.fragments
 
+import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.*
 import android.widget.SeekBar
 import android.widget.Toast
@@ -205,6 +208,40 @@ class BookViewFragment : Fragment() {
                 }
             }
         )
+
+
+        @SuppressLint("HandlerLeak")
+        val handler = object : Handler() {
+            override fun handleMessage(msg: Message) {
+                val progress = msg.what
+                bookViewFragmentBinding.mediaPosition.progress = progress
+                val timePlayed = progress
+                val timeLeft = mp.duration - timePlayed
+                bookViewFragmentBinding.timePlayed.text = formatIntToTime(timePlayed)
+                bookViewFragmentBinding.timeLeft.text =
+                    getString(R.string.time_left, formatIntToTime(timeLeft))
+            }
+        }
+
+        Thread(Runnable {
+            while (true) {
+                val msg = Message()
+                msg.what = mp.currentPosition
+                handler.sendMessage(msg)
+                Thread.sleep(1000)
+            }
+        }).start()
+    }
+
+    private fun formatIntToTime(progress: Int): String {
+        val minutes = progress / 1000 / 60
+        val seconds = progress / 1000 % 60
+
+        var time = "$minutes:"
+        if (seconds < 10) time += "0"
+        time += seconds
+
+        return time
     }
 
     private fun playTrack(trackToPlay: Int) {
