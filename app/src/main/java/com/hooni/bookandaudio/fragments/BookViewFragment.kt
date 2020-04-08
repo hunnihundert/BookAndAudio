@@ -85,7 +85,6 @@ class BookViewFragment : Fragment() {
 
         // onClickListeners
         bookViewFragmentBinding.playPauseMedia.setOnClickListener {
-            // check if playing/pause
             if (hasAudio) {
                 if (mp.isPlaying) {
                     mp.pause()
@@ -95,7 +94,7 @@ class BookViewFragment : Fragment() {
                     bookViewFragmentBinding.playPauseMedia.setBackgroundResource(android.R.drawable.ic_media_pause)
                 }
             } else {
-                hasNoAudioNotification()
+                showNoAudioNotification()
             }
 
         }
@@ -112,7 +111,7 @@ class BookViewFragment : Fragment() {
                         .show()
                 }
             } else {
-                hasNoAudioNotification()
+                showNoAudioNotification()
             }
 
         }
@@ -129,12 +128,12 @@ class BookViewFragment : Fragment() {
                         .show()
                 }
             } else {
-                hasNoAudioNotification()
+                showNoAudioNotification()
             }
         }
     }
 
-    private fun hasNoAudioNotification() {
+    private fun showNoAudioNotification() {
         Toast.makeText(
             requireContext(),
             getString(R.string.does_not_have_audio),
