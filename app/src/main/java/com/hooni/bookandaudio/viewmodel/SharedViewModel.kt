@@ -17,10 +17,6 @@ class SharedViewModel : ViewModel() {
     val selectedBook = MutableLiveData<Book>()
     val booksPerLine = MutableLiveData<Int>()
 
-    internal fun setBooksPerLine(_booksPerLine: Int) {
-        booksPerLine.value = _booksPerLine
-    }
-
     internal fun setLibrary(uriOfMainFolder: Uri): Boolean {
         var isValidDirectory = false
         lateinit var bookData: Book
@@ -129,5 +125,8 @@ class SharedViewModel : ViewModel() {
 
     internal fun getArePagesSwitched() = arePagesSwitched.value ?: false
 
+    internal fun setBooksPerLine(_booksPerLine: Int) {
+        booksPerLine.value = _booksPerLine
+    }
 
 }
