@@ -52,6 +52,7 @@ class LibraryFragment : Fragment() {
         val defaultValue = ""
         val preSelectedFolder = sharedPref.getString("uri", defaultValue)
         if (preSelectedFolder != "") setThumbnailFileList(preSelectedFolder!!.toUri())
+
     }
 
     override fun onResume() {
@@ -228,8 +229,8 @@ class LibraryFragment : Fragment() {
 
     private fun setFullScreen() {
         (requireActivity() as AppCompatActivity).supportActionBar!!.hide()
-        libraryFragmentBinding.root.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        //libraryFragmentBinding.root.systemUiVisibility =
+        //    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         libraryFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
 }
