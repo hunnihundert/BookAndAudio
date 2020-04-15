@@ -1,10 +1,7 @@
 package com.hooni.bookandaudio.fragments
 
-import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import android.view.*
 import android.widget.SeekBar
 import android.widget.Toast
@@ -18,11 +15,17 @@ import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.BookViewerAdapter
 import com.hooni.bookandaudio.databinding.FragmentBookViewerBinding
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
-class BookViewFragment : Fragment() {
+class BookViewFragment : Fragment(), CoroutineScope {
     private var _binding: FragmentBookViewerBinding? = null
     private val bookViewFragmentBinding get() = _binding!!
     private var hasAudio = true
+
+    private lateinit var job: Job
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     private lateinit var mp: MediaPlayer
     private var totalTime = 0
@@ -34,7 +37,6 @@ class BookViewFragment : Fragment() {
 
     private val model: SharedViewModel by activityViewModels()
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,6 +44,7 @@ class BookViewFragment : Fragment() {
     ): View? {
         _binding = FragmentBookViewerBinding.inflate(layoutInflater)
         val view = bookViewFragmentBinding.root
+        job = Job()
         initSupportActionBarMenu()
         initRecyclerView()
         initButtons()
@@ -63,6 +66,7 @@ class BookViewFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        job.cancel()
         _binding = null
         mp.stop()
         mp.release()
@@ -101,6 +105,9 @@ class BookViewFragment : Fragment() {
             }
 
         }
+        // TODO: unify playing track, when tapping next/previous track and play
+        // TODO: autoplay next track, when track is finished (+ notification)
+
         bookViewFragmentBinding.previousTrack.setOnClickListener {
             if (hasAudio) {
                 if (currentTrack > 0) {
@@ -143,6 +150,9 @@ class BookViewFragment : Fragment() {
             Toast.LENGTH_SHORT
         ).show()
     }
+
+    // TODO: Autostart next file
+    // TODO: tracklist indicator
 
     private fun initMediaPlayer() {
         mp = MediaPlayer()
@@ -208,29 +218,27 @@ class BookViewFragment : Fragment() {
                 }
             }
         )
+        launch {
+            setTimeOnProgressBar()
+        }
+    }
 
-
-        @SuppressLint("HandlerLeak")
-        val handler = object : Handler() {
-            override fun handleMessage(msg: Message) {
-                val progress = msg.what
-                bookViewFragmentBinding.mediaPosition.progress = progress
-                val timePlayed = progress
-                val timeLeft = mp.duration - timePlayed
-                bookViewFragmentBinding.timePlayed.text = formatIntToTime(timePlayed)
-                bookViewFragmentBinding.timeLeft.text =
-                    getString(R.string.time_left, formatIntToTime(timeLeft))
+    private suspend fun setTimeOnProgressBar() {
+        coroutineScope {
+            launch {
+                var progress = mp.currentPosition
+                while (progress < mp.duration) {
+                    progress = mp.currentPosition
+                    bookViewFragmentBinding.mediaPosition.progress = progress
+                    val timePlayed = progress
+                    val timeLeft = mp.duration - timePlayed
+                    bookViewFragmentBinding.timePlayed.text = formatIntToTime(timePlayed)
+                    bookViewFragmentBinding.timeLeft.text =
+                        getString(R.string.time_left, formatIntToTime(timeLeft))
+                    delay(1000)
+                }
             }
         }
-
-        Thread(Runnable {
-            while (true) {
-                val msg = Message()
-                msg.what = mp.currentPosition
-                handler.sendMessage(msg)
-                Thread.sleep(1000)
-            }
-        }).start()
     }
 
     private fun formatIntToTime(progress: Int): String {
@@ -303,5 +311,4 @@ class BookViewFragment : Fragment() {
         bookViewFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
         //bookViewFragmentBinding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }
-
 }
