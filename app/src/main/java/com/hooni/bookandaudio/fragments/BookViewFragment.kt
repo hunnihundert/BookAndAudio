@@ -9,23 +9,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.hooni.bookandaudio.R
 import com.hooni.bookandaudio.adapter.BookViewerAdapter
 import com.hooni.bookandaudio.databinding.FragmentBookViewerBinding
 import com.hooni.bookandaudio.viewmodel.SharedViewModel
-import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class BookViewFragment : Fragment(), CoroutineScope {
+class BookViewFragment : Fragment() {
     private var _binding: FragmentBookViewerBinding? = null
     private val bookViewFragmentBinding get() = _binding!!
     private var hasAudio = true
-
-    private lateinit var job: Job
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
 
     private lateinit var mp: MediaPlayer
     private var totalTime = 0
@@ -44,7 +41,6 @@ class BookViewFragment : Fragment(), CoroutineScope {
     ): View? {
         _binding = FragmentBookViewerBinding.inflate(layoutInflater)
         val view = bookViewFragmentBinding.root
-        job = Job()
         initSupportActionBarMenu()
         initRecyclerView()
         initButtons()
@@ -66,7 +62,6 @@ class BookViewFragment : Fragment(), CoroutineScope {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        job.cancel()
         _binding = null
         mp.stop()
         mp.release()
@@ -151,7 +146,6 @@ class BookViewFragment : Fragment(), CoroutineScope {
         ).show()
     }
 
-    // TODO: Autostart next file
     // TODO: tracklist indicator
 
     private fun initMediaPlayer() {
@@ -218,25 +212,22 @@ class BookViewFragment : Fragment(), CoroutineScope {
                 }
             }
         )
-        launch {
-            setTimeOnProgressBar()
-        }
+        setTimeOnPositionBar()
+
     }
 
-    private suspend fun setTimeOnProgressBar() {
-        coroutineScope {
-            launch {
-                var progress = mp.currentPosition
-                while (progress < mp.duration) {
-                    progress = mp.currentPosition
-                    bookViewFragmentBinding.mediaPosition.progress = progress
-                    val timePlayed = progress
-                    val timeLeft = mp.duration - timePlayed
-                    bookViewFragmentBinding.timePlayed.text = formatIntToTime(timePlayed)
-                    bookViewFragmentBinding.timeLeft.text =
-                        getString(R.string.time_left, formatIntToTime(timeLeft))
-                    delay(1000)
-                }
+    private fun setTimeOnPositionBar() {
+        lifecycleScope.launch {
+            var progress = mp.currentPosition
+            while (progress < mp.duration) {
+                progress = mp.currentPosition
+                bookViewFragmentBinding.mediaPosition.progress = progress
+                val timePlayed = progress
+                val timeLeft = mp.duration - timePlayed
+                bookViewFragmentBinding.timePlayed.text = formatIntToTime(timePlayed)
+                bookViewFragmentBinding.timeLeft.text =
+                    getString(R.string.time_left, formatIntToTime(timeLeft))
+                delay(1_000)
             }
         }
     }
