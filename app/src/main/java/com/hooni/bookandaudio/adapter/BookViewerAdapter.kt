@@ -26,7 +26,6 @@ class BookViewerAdapter : RecyclerView.Adapter<BookViewerAdapter.CustomViewHolde
         suspend fun bind(item: Pair<File?, File?>) {
             lateinit var bitmapToSet: Bitmap
             if (item.second == null) {
-                //Util.decodeSampledBitmapFromFile(item.first!!, Util.screenWidth / 4)
                 Glide
                     .with(image)
                     .load(item.first!!)
