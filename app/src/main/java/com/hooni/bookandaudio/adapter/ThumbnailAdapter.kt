@@ -15,11 +15,6 @@ class ThumbnailAdapter(private val clickListener: (Book) -> Unit) :
     private var thumbnailList = listOf<Book>()
     private lateinit var binding: LibraryListItemBinding
 
-    companion object {
-        private const val REQUIRED_THUMBNAIL_WIDTH = 200
-        private const val REQUIRED_THUMBNAIL_HEIGHT = 180
-    }
-
     inner class CustomViewHolder(binding: LibraryListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private val thumbnail = binding.thumbnail

@@ -17,7 +17,7 @@ import java.io.File
 
 class BookViewerAdapter : RecyclerView.Adapter<BookViewerAdapter.CustomViewHolder>() {
     private var listOfImages = emptyList<Pair<File?, File?>>()
-    lateinit var binding: BookPageListItemBinding
+    private lateinit var binding: BookPageListItemBinding
 
     inner class CustomViewHolder(binding: BookPageListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
